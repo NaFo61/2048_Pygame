@@ -211,6 +211,8 @@ class App(Game):
         self.LEVEL = 1
         self.settings = funcs.generate_settings(self.LEVEL)
 
+        self.move_sounds = [pygame.mixer.Sound(f'../data/move_music_{i}.wav') for i in range(1, 4)]
+
         self.start_page(screen)
 
         self.game_page(screen)
@@ -229,8 +231,8 @@ class App(Game):
                         pygame.K_UP,
                         pygame.K_DOWN,
                     ):
+                        random.choice(self.move_sounds).play()
                         board.move(event.key)
-                screen.fill(style.BACKGROUND_COLOR)
                 if event.type == pygame.MOUSEBUTTONDOWN:
                         pos = event.pos
                         x, y = pos
@@ -239,7 +241,6 @@ class App(Game):
                                 and 596 - 25 < y < 596 + 25
                         ):
                             self.start_page(screen)
-            screen.fill(style.BACKGROUND_COLOR)
             board.render(screen)
             pygame.display.flip()
 
@@ -262,10 +263,12 @@ class App(Game):
         button_x_1 = width // 2
         button_y_1 = height // 2
 
+        play_button_rect = pygame.Rect(button_x_1 - 100, button_y_1 - 25, 200, 50)
+
         pygame.draw.rect(
             screen,
             style.S_BUTTON,
-            (button_x_1 - 100, button_y_1 - 25, 200, 50),
+            play_button_rect,
             0,
             15,
         )
@@ -283,10 +286,12 @@ class App(Game):
         button_x_2 = width // 2
         button_y_2 = height // 2 + 80
 
+        records_button_rect = pygame.Rect(button_x_2 - 100, button_y_2 - 25, 200, 50)
+
         pygame.draw.rect(
             screen,
             style.S_BUTTON,
-            (button_x_2 - 100, button_y_2 - 25, 200, 50),
+            records_button_rect,
             0,
             15,
         )
@@ -304,10 +309,12 @@ class App(Game):
         button_x_3 = width // 2
         button_y_3 = height // 2 + 160
 
+        rules_button_rect = pygame.Rect(button_x_3 - 100, button_y_3 - 25, 200, 50)
+
         pygame.draw.rect(
             screen,
             style.S_BUTTON,
-            (button_x_3 - 100, button_y_3 - 25, 200, 50),
+            rules_button_rect,
             0,
             15,
         )
@@ -328,21 +335,109 @@ class App(Game):
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pos = event.pos
                     x, y = pos
-                    if (
-                        button_x_1 - 100 < x < button_x_1 + 100
-                        and button_y_1 - 25 < y < button_y_1 + 25
-                    ):
+                    if play_button_rect.collidepoint(x, y):
                         self.game_page(screen)
-                    elif (
-                        button_x_2 - 100 < x < button_x_2 + 100
-                        and button_y_2 - 25 < y < button_y_2 + 25
-                    ):
+                    elif records_button_rect.collidepoint(x, y):
+                        # Handle records button click
                         ...
-                    elif (
-                        button_x_3 - 100 < x < button_x_3 + 100
-                        and button_y_3 - 25 < y < button_y_3 + 25
-                    ):
+                    elif rules_button_rect.collidepoint(x, y):
                         self.rules_page(screen)
+                if event.type == pygame.MOUSEMOTION:
+                    pos = event.pos
+                    x, y = pos
+                    if play_button_rect.collidepoint(x, y):
+                        pygame.draw.rect(
+                            screen,
+                            style.S_BUTTON_HOVER,
+                            play_button_rect,
+                            0,
+                            15,
+                        )
+                        font = pygame.font.SysFont("bahnschrift", 40)
+                        text = font.render("Играть", True, style.S_BUTTON_TEXT)
+
+                        button_x_text_1 = width // 2 - text.get_width() // 2
+                        button_y_text_1 = height // 2 - text.get_height() // 2
+
+                        screen.blit(text, (button_x_text_1, button_y_text_1))
+                    else:
+                        pygame.draw.rect(
+                            screen,
+                            style.S_BUTTON,
+                            play_button_rect,
+                            0,
+                            15,
+                        )
+                        font = pygame.font.SysFont("bahnschrift", 40)
+                        text = font.render("Играть", True, style.S_BUTTON_TEXT)
+
+                        button_x_text_1 = width // 2 - text.get_width() // 2
+                        button_y_text_1 = height // 2 - text.get_height() // 2
+
+                        screen.blit(text, (button_x_text_1, button_y_text_1))
+
+                    if records_button_rect.collidepoint(x, y):
+                        pygame.draw.rect(
+                            screen,
+                            style.S_BUTTON_HOVER,
+                            records_button_rect,
+                            0,
+                            15,
+                        )
+                        font = pygame.font.SysFont("bahnschrift", 40)
+                        text = font.render("Рекорды", True, style.S_BUTTON_TEXT)
+
+                        button_x_text_2 = width // 2 - text.get_width() // 2
+                        button_y_text_2 = height // 2 + 80 - text.get_height() // 2
+
+                        screen.blit(text, (button_x_text_2, button_y_text_2))
+                    else:
+                        pygame.draw.rect(
+                            screen,
+                            style.S_BUTTON,
+                            records_button_rect,
+                            0,
+                            15,
+                        )
+                        font = pygame.font.SysFont("bahnschrift", 40)
+                        text = font.render("Рекорды", True, style.S_BUTTON_TEXT)
+
+                        button_x_text_2 = width // 2 - text.get_width() // 2
+                        button_y_text_2 = height // 2 + 80 - text.get_height() // 2
+
+                        screen.blit(text, (button_x_text_2, button_y_text_2))
+
+                    if rules_button_rect.collidepoint(x, y):
+                        pygame.draw.rect(
+                            screen,
+                            style.S_BUTTON_HOVER,
+                            rules_button_rect,
+                            0,
+                            15,
+                        )
+                        font = pygame.font.SysFont("bahnschrift", 40)
+                        text = font.render("Правила", True, style.S_BUTTON_TEXT)
+
+                        button_x_text_3 = width // 2 - text.get_width() // 2
+                        button_y_text_3 = height // 2 + 160 - text.get_height() // 2
+
+                        screen.blit(text, (button_x_text_3, button_y_text_3))
+                    else:
+                        pygame.draw.rect(
+                            screen,
+                            style.S_BUTTON,
+                            rules_button_rect,
+                            0,
+                            15,
+                        )
+                        font = pygame.font.SysFont("bahnschrift", 40)
+                        text = font.render("Правила", True, style.S_BUTTON_TEXT)
+
+                        button_x_text_3 = width // 2 - text.get_width() // 2
+                        button_y_text_3 = height // 2 + 160 - text.get_height() // 2
+
+                        screen.blit(text, (button_x_text_3, button_y_text_3))
+
             pygame.display.flip()
 
     def rules_page(self, screen):
@@ -395,10 +490,12 @@ class App(Game):
         button_x_1 = width // 2
         button_y_1 = height - height // 8
 
+        rect = pygame.Rect(button_x_1 - 100, button_y_1 - 25, 200, 50)
+
         pygame.draw.rect(
             screen,
             style.S_BUTTON,
-            (button_x_1 - 100, button_y_1 - 25, 200, 50),
+            rect,
             0,
             15,
         )
@@ -419,10 +516,7 @@ class App(Game):
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pos = event.pos
                     x, y = pos
-                    if (
-                            button_x_1 - 100 < x < button_x_1 + 100
-                            and button_y_1 - 25 < y < button_y_1 + 25
-                    ):
+                    if rect.collidepoint(x, y):
                         self.start_page(screen)
             pygame.display.flip()
 
