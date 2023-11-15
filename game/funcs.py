@@ -1,5 +1,6 @@
 import style
 
+
 def get_color_cell(cell_value):
     settings = {
         0: style.COLOR_0,
@@ -21,27 +22,50 @@ def get_color_cell(cell_value):
 def get_color_fonsize_text(cell_value, level):
     match cell_value:
         case 2:
-            return (121, 112, 99), (80 if level == 1 else 60 if level == 2 else 40)
+            return (121, 112, 99), (
+                80 if level == 1 else 60 if level == 2 else 40
+            )
         case 4:
-            return (121, 112, 99), (80 if level == 1 else 60 if level == 2 else 40)
+            return (121, 112, 99), (
+                80 if level == 1 else 60 if level == 2 else 40
+            )
         case 8:
-            return (255, 245, 224), (80 if level == 1 else 60 if level == 2 else 40)
+            return (255, 245, 224), (
+                80 if level == 1 else 60 if level == 2 else 40
+            )
         case 16:
-            return (255, 245, 224), (75 if level == 1 else 60 if level == 2 else 40)
+            return (255, 245, 224), (
+                75 if level == 1 else 60 if level == 2 else 40
+            )
         case 32:
-            return (255, 245, 224), (75 if level == 1 else 60 if level == 2 else 40)
+            return (255, 245, 224), (
+                75 if level == 1 else 60 if level == 2 else 40
+            )
         case 64:
-            return (255, 245, 224), (75 if level == 1 else 60 if level == 2 else 40)
+            return (255, 245, 224), (
+                75 if level == 1 else 60 if level == 2 else 40
+            )
         case 128:
-            return (255, 245, 224), (65 if level == 1 else 45 if level == 2 else 35)
+            return (255, 245, 224), (
+                65 if level == 1 else 45 if level == 2 else 35
+            )
         case 256:
-            return (255, 245, 224), (65 if level == 1 else 45 if level == 2 else 35)
+            return (255, 245, 224), (
+                65 if level == 1 else 45 if level == 2 else 35
+            )
         case 512:
-            return (255, 245, 224), (65 if level == 1 else 45 if level == 2 else 35)
+            return (255, 245, 224), (
+                65 if level == 1 else 45 if level == 2 else 35
+            )
         case 1024:
-            return (255, 245, 224), (55 if level == 1 else 35 if level == 2 else 25)
+            return (255, 245, 224), (
+                55 if level == 1 else 35 if level == 2 else 25
+            )
         case 2048:
-            return (255, 245, 224), (55 if level == 1 else 35 if level == 2 else 25)
+            return (255, 245, 224), (
+                55 if level == 1 else 35 if level == 2 else 25
+            )
+
 
 def generate_settings(level):
     """Функция, возвращающая настройки игры"""
@@ -63,6 +87,6 @@ def generate_settings(level):
             "value": 8,
             "cell_size": 41,
             "margin": 8,
-        }
+        },
     }
     return settings[level]
