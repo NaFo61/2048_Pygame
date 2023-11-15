@@ -9,9 +9,11 @@ import funcs
 
 
 class Board:
-    def __init__(self, settings):
+    def __init__(self, screen_size, settings):
         self.left = 50
-        self.top = 200
+        self.top = 150
+
+        self.screen_size = screen_size
 
         self.level = settings.get("level")
         self.value = settings.get("value")
@@ -30,7 +32,31 @@ class Board:
                 self.render_cell(screen, i, j)
 
     def render_decoration(self, screen):
-        pygame.draw.rect(screen, style.RECT, (50, 200, 400, 400), 0, 15)
+        pygame.draw.rect(screen, style.RECT, (self.left, self.top, 400, 400), 0, 15)
+
+        width, height = self.screen_size
+
+        # <==== Назад ====>
+        button_x = width // 2
+        button_y = height - height // 12
+
+        pygame.draw.rect(
+            screen,
+            style.S_BUTTON,
+            (button_x - 100, button_y - 25, 200, 50),
+            0,
+            15,
+        )
+
+        font = pygame.font.SysFont("bahnschrift", 40)
+        text = font.render("Назад", True, style.S_BUTTON_TEXT)
+
+        button_x_text = width // 2 - text.get_width() // 2
+        button_y_text = height - height // 12 - text.get_height() // 2
+
+        screen.blit(text, (button_x_text, button_y_text))
+        # <==== Назад ====>
+
 
     def render_cell(self, screen, i, j):
         cell_value = self.board[i][j]
@@ -161,7 +187,7 @@ class Game(Board, Login):
     def __init__(self, screen, screen_size, settings):
         width, height = screen_size
 
-        super().__init__(settings)
+        super().__init__(screen_size, settings)
 
     def move(self, key):
         is_empty_cells = self.check_empty_cells()
@@ -204,6 +230,15 @@ class App(Game):
                         pygame.K_DOWN,
                     ):
                         board.move(event.key)
+                screen.fill(style.BACKGROUND_COLOR)
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                        pos = event.pos
+                        x, y = pos
+                        if (
+                                250 - 100 < x < 250 + 100
+                                and 596 - 25 < y < 596 + 25
+                        ):
+                            self.start_page(screen)
             screen.fill(style.BACKGROUND_COLOR)
             board.render(screen)
             pygame.display.flip()
@@ -215,7 +250,7 @@ class App(Game):
 
         # <==== Надпись ====>
         font = pygame.font.SysFont("bahnschrift", 60)
-        text = font.render("2048", True, style.S_TITLE)
+        text = font.render("2048", True, style.S_MAIN_TITLE)
 
         text_x = width // 2 - text.get_width() // 2
         text_y = height // 3 - text.get_height() // 2
@@ -311,19 +346,50 @@ class App(Game):
             pygame.display.flip()
 
     def rules_page(self, screen):
+        """
+        Display the rules page.
+
+        Args:
+            screen (pygame.Surface): The game screen.
+
+        Returns:
+            None
+        """
         width, height = self.screen_size
 
         screen.fill(style.BACKGROUND_COLOR)
 
         # <==== Надпись ====>
         font = pygame.font.SysFont("bahnschrift", 60)
-        text = font.render("Правила", True, style.S_TITLE)
+        text = font.render("Правила", True, style.S_MAIN_TITLE)
 
         text_x = width // 2 - text.get_width() // 2
         text_y = height // 8 - text.get_height() // 2
 
         screen.blit(text, (text_x, text_y))
         # <==== Надпись ====>
+
+        # <==== Правила игры ====>
+        rule_font_title = pygame.font.SysFont("bahnschrift", 35)
+        rule_font_text = pygame.font.SysFont("bahnschrift", 15)
+        rule_text_1 = rule_font_title.render("Цель игры:", True, style.S_TITLE)
+        rule_text_2 = rule_font_text.render("Получить плитку со значением 2048.", True, style.S_TEXT)
+        rule_text_3 = rule_font_title.render("Управление:", True, style.S_TITLE)
+        rule_text_4 = rule_font_text.render("Используйте стрелки для перемещения всех плиток.", True, style.S_TEXT)
+        rule_text_5 = rule_font_text.render("Плитки с одинаковыми значениями сливаются вместе.", True, style.S_TEXT)
+        rule_text_6 = rule_font_title.render("Проигрыш:", True, style.S_TITLE)
+        rule_text_7 = rule_font_text.render("Когда пустых клеток на поле не останется.", True, style.S_TEXT)
+
+        rule_text_y = height // 4
+
+        screen.blit(rule_text_1, (width // 2 - rule_text_1.get_width() // 2, rule_text_y))
+        screen.blit(rule_text_2, (width // 2 - rule_text_2.get_width() // 2, rule_text_y + 40))
+        screen.blit(rule_text_3, (width // 2 - rule_text_3.get_width() // 2, rule_text_y + 100))
+        screen.blit(rule_text_4, (width // 2 - rule_text_4.get_width() // 2, rule_text_y + 140))
+        screen.blit(rule_text_5, (width // 2 - rule_text_5.get_width() // 2, rule_text_y + 180))
+        screen.blit(rule_text_6, (width // 2 - rule_text_6.get_width() // 2, rule_text_y + 240))
+        screen.blit(rule_text_7, (width // 2 - rule_text_7.get_width() // 2, rule_text_y + 280))
+        # <==== Правила игры ====>
 
         # <==== Назад ====>
         button_x_1 = width // 2
@@ -354,8 +420,8 @@ class App(Game):
                     pos = event.pos
                     x, y = pos
                     if (
-                        button_x_1 - 100 < x < button_x_1 + 100
-                        and button_y_1 - 25 < y < button_y_1 + 25
+                            button_x_1 - 100 < x < button_x_1 + 100
+                            and button_y_1 - 25 < y < button_y_1 + 25
                     ):
                         self.start_page(screen)
             pygame.display.flip()
