@@ -144,6 +144,8 @@ class Game(Board, Login):
 def start_page(screen, screen_size):
     width, height = screen_size
 
+    screen.fill(style.BACKGROUND_COLOR)
+
     # <==== Надпись ====>
     font = pygame.font.SysFont("bahnschrift", 60)
     text = font.render("2048", True, style.S_TITLE)
@@ -238,7 +240,58 @@ def start_page(screen, screen_size):
                         button_x_3 - 100 < x < button_x_3 + 100
                         and button_y_3 - 25 < y < button_y_3 + 25
                 ):
-                    ...
+                    rules_page(screen, screen_size)
+        pygame.display.flip()
+
+
+def rules_page(screen, screen_size):
+    width, height = screen_size
+
+    screen.fill(style.BACKGROUND_COLOR)
+
+    # <==== Надпись ====>
+    font = pygame.font.SysFont("bahnschrift", 60)
+    text = font.render("Правила", True, style.S_TITLE)
+
+    text_x = width // 2 - text.get_width() // 2
+    text_y = height // 8 - text.get_height() // 2
+
+    screen.blit(text, (text_x, text_y))
+    # <==== Надпись ====>
+
+    # <==== Назад ====>
+    button_x_1 = width // 2
+    button_y_1 = height - height // 8
+
+    pygame.draw.rect(
+        screen,
+        style.S_BUTTON,
+        (button_x_1 - 100, button_y_1 - 25, 200, 50),
+        0,
+        15,
+    )
+
+    font = pygame.font.SysFont("bahnschrift", 40)
+    text = font.render("Назад", True, style.S_BUTTON_TEXT)
+
+    button_x_text_1 = width // 2 - text.get_width() // 2
+    button_y_text_1 = height - height // 8 - text.get_height() // 2
+
+    screen.blit(text, (button_x_text_1, button_y_text_1))
+    # <==== Назад ====>
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pos = event.pos
+                x, y = pos
+                if (
+                        button_x_1 - 100 < x < button_x_1 + 100
+                        and button_y_1 - 25 < y < button_y_1 + 25
+                ):
+                    start_page(screen, screen_size)
         pygame.display.flip()
 
 
@@ -252,7 +305,6 @@ def main():
     pygame.init()
     SCREEN_SIZE = (500, 650)
     screen = pygame.display.set_mode(SCREEN_SIZE)
-    screen.fill(style.BACKGROUND_COLOR)
     pygame.display.set_caption("2048")
 
     LEVEL = 1
