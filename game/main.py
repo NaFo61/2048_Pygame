@@ -55,7 +55,7 @@ class Board:
         )
         font = pygame.font.SysFont("spendthrift", 20)
         text = font.render("Счет", True, style.S_TABLE_SCORE_TEXT
-        )
+                           )
 
         button_x_text = 300 - text.get_width() // 2
         button_y_text = 25 - text.get_height() // 2
@@ -72,7 +72,7 @@ class Board:
         )
         font = pygame.font.SysFont("spendthrift", 20)
         text = font.render("Лучший", True, style.S_TABLE_SCORE_TEXT
-        )
+                           )
 
         button_x_text = 410 - text.get_width() // 2
         button_y_text = 25 - text.get_height() // 2
@@ -302,10 +302,16 @@ class App(Game):
                 if event.type == pygame.MOUSEMOTION:
                     pos = event.pos
                     x, y = pos
-                    if 250 - 100 < x < 250 + 100 and 596 - 25 < y < 596 + 25:
-                        button_x = width // 2
-                        button_y = height - height // 12
 
+                    button_x = width // 2
+                    button_y = height - height // 12
+                    font = pygame.font.SysFont("spendthrift", 40)
+                    text = font.render("Назад", True, style.S_BUTTON_TEXT)
+
+                    button_x_text = width // 2 - text.get_width() // 2
+                    button_y_text = height - height // 12 - text.get_height() // 2
+
+                    if 250 - 100 < x < 250 + 100 and 596 - 25 < y < 596 + 25:
                         pygame.draw.rect(
                             screen,
                             style.S_BUTTON_HOVER,
@@ -313,18 +319,8 @@ class App(Game):
                             0,
                             15,
                         )
-
-                        font = pygame.font.SysFont("spendthrift", 40)
-                        text = font.render("Назад", True, style.S_BUTTON_TEXT)
-
-                        button_x_text = width // 2 - text.get_width() // 2
-                        button_y_text = height - height // 12 - text.get_height() // 2
-
                         screen.blit(text, (button_x_text, button_y_text))
                     else:
-                        button_x = width // 2
-                        button_y = height - height // 12
-
                         pygame.draw.rect(
                             screen,
                             style.S_BUTTON,
@@ -332,16 +328,10 @@ class App(Game):
                             0,
                             15,
                         )
-
-                        font = pygame.font.SysFont("spendthrift", 40)
-                        text = font.render("Назад", True, style.S_BUTTON_TEXT)
-
-                        button_x_text = width // 2 - text.get_width() // 2
-                        button_y_text = height - height // 12 - text.get_height() // 2
-
                         screen.blit(text, (button_x_text, button_y_text))
             board.render(screen)
             pygame.display.flip()
+
     def start_page(self, screen):
         width, height = self.screen_size
 
@@ -364,12 +354,12 @@ class App(Game):
         )
 
         font = pygame.font.SysFont("spendthrift", 40)
-        text = font.render("Играть", True, style.S_BUTTON_TEXT)
+        text_play = font.render("Играть", True, style.S_BUTTON_TEXT)
 
-        button_x_text_1 = width // 2 - text.get_width() // 2
-        button_y_text_1 = height // 2 - text.get_height() // 2
+        button_x_text_1 = width // 2 - text_play.get_width() // 2
+        button_y_text_1 = height // 2 - text_play.get_height() // 2
 
-        screen.blit(text, (button_x_text_1, button_y_text_1))
+        screen.blit(text_play, (button_x_text_1, button_y_text_1))
         # <==== Играть ====>
 
         # <==== Рекорды ====>
@@ -389,12 +379,12 @@ class App(Game):
         )
 
         font = pygame.font.SysFont("spendthrift", 40)
-        text = font.render("Рекорды", True, style.S_BUTTON_TEXT)
+        text_records = font.render("Рекорды", True, style.S_BUTTON_TEXT)
 
-        button_x_text_2 = width // 2 - text.get_width() // 2
-        button_y_text_2 = height // 2 + 80 - text.get_height() // 2
+        button_x_text_2 = width // 2 - text_records.get_width() // 2
+        button_y_text_2 = height // 2 + 80 - text_records.get_height() // 2
 
-        screen.blit(text, (button_x_text_2, button_y_text_2))
+        screen.blit(text_records, (button_x_text_2, button_y_text_2))
         # <==== Рекорды ====>
 
         # <==== Правила ====>
@@ -414,12 +404,12 @@ class App(Game):
         )
 
         font = pygame.font.SysFont("spendthrift", 40)
-        text = font.render("Правила", True, style.S_BUTTON_TEXT)
+        text_rules = font.render("Правила", True, style.S_BUTTON_TEXT)
 
-        button_x_text_3 = width // 2 - text.get_width() // 2
-        button_y_text_3 = height // 2 + 160 - text.get_height() // 2
+        button_x_text_3 = width // 2 - text_rules.get_width() // 2
+        button_y_text_3 = height // 2 + 160 - text_rules.get_height() // 2
 
-        screen.blit(text, (button_x_text_3, button_y_text_3))
+        screen.blit(text_rules, (button_x_text_3, button_y_text_3))
         # <==== Правила ====>
 
         while True:
@@ -435,12 +425,12 @@ class App(Game):
             ][color_index]
 
             # Пересоздание текста с новым цветом
-            font = pygame.font.SysFont("spendthrift", 150)
-            text = font.render("2048", True, color)
-            text_x = width // 2 - text.get_width() // 2
-            text_y = height // 3 - text.get_height() // 2
+            font_title = pygame.font.SysFont("spendthrift", 150)
+            text_title = font_title.render("2048", True, color)
+            text_x = width // 2 - text_title.get_width() // 2
+            text_y = height // 3 - text_title.get_height() // 2
 
-            screen.blit(text, (text_x, text_y))
+            screen.blit(text_title, (text_x, text_y))
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -469,13 +459,7 @@ class App(Game):
                             0,
                             15,
                         )
-                        font = pygame.font.SysFont("spendthrift", 40)
-                        text = font.render("Играть", True, style.S_BUTTON_TEXT)
-
-                        button_x_text_1 = width // 2 - text.get_width() // 2
-                        button_y_text_1 = height // 2 - text.get_height() // 2
-
-                        screen.blit(text, (button_x_text_1, button_y_text_1))
+                        screen.blit(text_play, (button_x_text_1, button_y_text_1))
                     else:
                         pygame.draw.rect(
                             screen,
@@ -484,13 +468,7 @@ class App(Game):
                             0,
                             15,
                         )
-                        font = pygame.font.SysFont("spendthrift", 40)
-                        text = font.render("Играть", True, style.S_BUTTON_TEXT)
-
-                        button_x_text_1 = width // 2 - text.get_width() // 2
-                        button_y_text_1 = height // 2 - text.get_height() // 2
-
-                        screen.blit(text, (button_x_text_1, button_y_text_1))
+                        screen.blit(text_play, (button_x_text_1, button_y_text_1))
 
                     if records_button_rect.collidepoint(x, y):
                         pygame.draw.rect(
@@ -500,17 +478,7 @@ class App(Game):
                             0,
                             15,
                         )
-                        font = pygame.font.SysFont("spendthrift", 40)
-                        text = font.render(
-                            "Рекорды", True, style.S_BUTTON_TEXT
-                        )
-
-                        button_x_text_2 = width // 2 - text.get_width() // 2
-                        button_y_text_2 = (
-                                height // 2 + 80 - text.get_height() // 2
-                        )
-
-                        screen.blit(text, (button_x_text_2, button_y_text_2))
+                        screen.blit(text_records, (button_x_text_2, button_y_text_2))
                     else:
                         pygame.draw.rect(
                             screen,
@@ -519,17 +487,7 @@ class App(Game):
                             0,
                             15,
                         )
-                        font = pygame.font.SysFont("spendthrift", 40)
-                        text = font.render(
-                            "Рекорды", True, style.S_BUTTON_TEXT
-                        )
-
-                        button_x_text_2 = width // 2 - text.get_width() // 2
-                        button_y_text_2 = (
-                                height // 2 + 80 - text.get_height() // 2
-                        )
-
-                        screen.blit(text, (button_x_text_2, button_y_text_2))
+                        screen.blit(text_records, (button_x_text_2, button_y_text_2))
 
                     if rules_button_rect.collidepoint(x, y):
                         pygame.draw.rect(
@@ -539,17 +497,7 @@ class App(Game):
                             0,
                             15,
                         )
-                        font = pygame.font.SysFont("spendthrift", 40)
-                        text = font.render(
-                            "Правила", True, style.S_BUTTON_TEXT
-                        )
-
-                        button_x_text_3 = width // 2 - text.get_width() // 2
-                        button_y_text_3 = (
-                                height // 2 + 160 - text.get_height() // 2
-                        )
-
-                        screen.blit(text, (button_x_text_3, button_y_text_3))
+                        screen.blit(text_rules, (button_x_text_3, button_y_text_3))
                     else:
                         pygame.draw.rect(
                             screen,
@@ -558,17 +506,7 @@ class App(Game):
                             0,
                             15,
                         )
-                        font = pygame.font.SysFont("spendthrift", 40)
-                        text = font.render(
-                            "Правила", True, style.S_BUTTON_TEXT
-                        )
-
-                        button_x_text_3 = width // 2 - text.get_width() // 2
-                        button_y_text_3 = (
-                                height // 2 + 160 - text.get_height() // 2
-                        )
-
-                        screen.blit(text, (button_x_text_3, button_y_text_3))
+                        screen.blit(text_rules, (button_x_text_3, button_y_text_3))
 
             pygame.display.flip()
 
@@ -587,14 +525,17 @@ class App(Game):
         screen.fill(style.BACKGROUND_COLOR)
 
         # <==== Надпись ====>
-        font = pygame.font.SysFont("spendthrift", 60)
-        text = font.render("Выбери размер поля", True, style.S_MAIN_TITLE)
+        font_title = pygame.font.SysFont("spendthrift", 60)
+        text_title = font_title.render("Выбери размер поля", True, style.S_MAIN_TITLE)
 
-        text_x = width // 2 - text.get_width() // 2
-        text_y = height // 8 - text.get_height() // 2
+        text_x = width // 2 - text_title.get_width() // 2
+        text_y = height // 8 - text_title.get_height() // 2
 
-        screen.blit(text, (text_x, text_y))
+        screen.blit(text_title, (text_x, text_y))
         # <==== Надпись ====>
+
+        font = pygame.font.SysFont("spendthrift", 40)  # Шрифт для кнопок
+
 
         # <==== 4 x 4 ====>
         button_x_1 = width // 2
@@ -610,13 +551,12 @@ class App(Game):
             15,
         )
 
-        font = pygame.font.SysFont("spendthrift", 40)
-        text = font.render("4 x 4", True, style.S_BUTTON_TEXT)
+        text_4_x_4 = font.render("4 x 4", True, style.S_BUTTON_TEXT)
 
-        button_x_text_1 = width // 2 - text.get_width() // 2
-        button_y_text_1 = height // 3 - text.get_height() // 2
+        button_x_text_1 = width // 2 - text_4_x_4.get_width() // 2
+        button_y_text_1 = height // 3 - text_4_x_4.get_height() // 2
 
-        screen.blit(text, (button_x_text_1, button_y_text_1))
+        screen.blit(text_4_x_4, (button_x_text_1, button_y_text_1))
         # <==== 4 x 4 ====>
 
         # <==== 6 x 6 ====>
@@ -633,13 +573,12 @@ class App(Game):
             15,
         )
 
-        font = pygame.font.SysFont("spendthrift", 40)
-        text = font.render("6 x 6", True, style.S_BUTTON_TEXT)
+        text_6_x_6 = font.render("6 x 6", True, style.S_BUTTON_TEXT)
 
-        button_x_text_2 = width // 2 - text.get_width() // 2
-        button_y_text_2 = height // 3 + 100 - text.get_height() // 2
+        button_x_text_2 = width // 2 - text_6_x_6.get_width() // 2
+        button_y_text_2 = height // 3 + 100 - text_6_x_6.get_height() // 2
 
-        screen.blit(text, (button_x_text_2, button_y_text_2))
+        screen.blit(text_6_x_6, (button_x_text_2, button_y_text_2))
         # <==== 6 x 6 ====>
 
         # <==== Правила ====>
@@ -656,13 +595,12 @@ class App(Game):
             15,
         )
 
-        font = pygame.font.SysFont("spendthrift", 40)
-        text = font.render("8 x 8", True, style.S_BUTTON_TEXT)
+        text_8_x_8 = font.render("8 x 8", True, style.S_BUTTON_TEXT)
 
-        button_x_text_3 = width // 2 - text.get_width() // 2
-        button_y_text_3 = height // 3 + 200 - text.get_height() // 2
+        button_x_text_3 = width // 2 - text_8_x_8.get_width() // 2
+        button_y_text_3 = height // 3 + 200 - text_8_x_8.get_height() // 2
 
-        screen.blit(text, (button_x_text_3, button_y_text_3))
+        screen.blit(text_8_x_8, (button_x_text_3, button_y_text_3))
         # <==== 8 x 8 ====>
 
         # <==== Назад ====>
@@ -681,13 +619,12 @@ class App(Game):
             15,
         )
 
-        font = pygame.font.SysFont("spendthrift", 40)
-        text = font.render("Назад", True, style.S_BUTTON_TEXT)
+        text_back = font.render("Назад", True, style.S_BUTTON_TEXT)
 
-        button_back_x_text = width // 2 - text.get_width() // 2
-        button_back_y_text = height - height // 8 - text.get_height() // 2
+        button_back_x_text = width // 2 - text_back.get_width() // 2
+        button_back_y_text = height - height // 8 - text_back.get_height() // 2
 
-        screen.blit(text, (button_back_x_text, button_back_y_text))
+        screen.blit(text_back, (button_back_x_text, button_back_y_text))
         # <==== Назад ====>
 
         while True:
@@ -723,13 +660,7 @@ class App(Game):
                             0,
                             15,
                         )
-                        font = pygame.font.SysFont("spendthrift", 40)
-                        text = font.render("4 x 4", True, style.S_BUTTON_TEXT)
-
-                        button_x_text_1 = width // 2 - text.get_width() // 2
-                        button_y_text_1 = height // 3 - text.get_height() // 2
-
-                        screen.blit(text, (button_x_text_1, button_y_text_1))
+                        screen.blit(text_4_x_4, (button_x_text_1, button_y_text_1))
                     else:
                         pygame.draw.rect(
                             screen,
@@ -738,13 +669,7 @@ class App(Game):
                             0,
                             15,
                         )
-                        font = pygame.font.SysFont("spendthrift", 40)
-                        text = font.render("4 x 4", True, style.S_BUTTON_TEXT)
-
-                        button_x_text_1 = width // 2 - text.get_width() // 2
-                        button_y_text_1 = height // 3 - text.get_height() // 2
-
-                        screen.blit(text, (button_x_text_1, button_y_text_1))
+                        screen.blit(text_4_x_4, (button_x_text_1, button_y_text_1))
 
                     if button_6_x_6.collidepoint(x, y):
                         pygame.draw.rect(
@@ -754,15 +679,7 @@ class App(Game):
                             0,
                             15,
                         )
-                        font = pygame.font.SysFont("spendthrift", 40)
-                        text = font.render("6 x 6", True, style.S_BUTTON_TEXT)
-
-                        button_x_text_2 = width // 2 - text.get_width() // 2
-                        button_y_text_2 = (
-                                height // 3 + 100 - text.get_height() // 2
-                        )
-
-                        screen.blit(text, (button_x_text_2, button_y_text_2))
+                        screen.blit(text_6_x_6, (button_x_text_2, button_y_text_2))
                     else:
                         pygame.draw.rect(
                             screen,
@@ -771,15 +688,7 @@ class App(Game):
                             0,
                             15,
                         )
-                        font = pygame.font.SysFont("spendthrift", 40)
-                        text = font.render("6 x 6", True, style.S_BUTTON_TEXT)
-
-                        button_x_text_2 = width // 2 - text.get_width() // 2
-                        button_y_text_2 = (
-                                height // 3 + 100 - text.get_height() // 2
-                        )
-
-                        screen.blit(text, (button_x_text_2, button_y_text_2))
+                        screen.blit(text_6_x_6, (button_x_text_2, button_y_text_2))
 
                     if button_8_x_8.collidepoint(x, y):
                         pygame.draw.rect(
@@ -789,15 +698,7 @@ class App(Game):
                             0,
                             15,
                         )
-                        font = pygame.font.SysFont("spendthrift", 40)
-                        text = font.render("8 x 8", True, style.S_BUTTON_TEXT)
-
-                        button_x_text_3 = width // 2 - text.get_width() // 2
-                        button_y_text_3 = (
-                                height // 3 + 200 - text.get_height() // 2
-                        )
-
-                        screen.blit(text, (button_x_text_3, button_y_text_3))
+                        screen.blit(text_8_x_8, (button_x_text_3, button_y_text_3))
                     else:
                         pygame.draw.rect(
                             screen,
@@ -806,18 +707,8 @@ class App(Game):
                             0,
                             15,
                         )
-                        font = pygame.font.SysFont("spendthrift", 40)
-                        text = font.render("8 x 8", True, style.S_BUTTON_TEXT)
-
-                        button_x_text_3 = width // 2 - text.get_width() // 2
-                        button_y_text_3 = (
-                                height // 3 + 200 - text.get_height() // 2
-                        )
-
-                        screen.blit(text, (button_x_text_3, button_y_text_3))
+                        screen.blit(text_8_x_8, (button_x_text_3, button_y_text_3))
                     if button_back.collidepoint(x, y):
-                        pygame.Rect(button_x_1 - 100, button_y_1 - 25, 200, 50)
-
                         pygame.draw.rect(
                             screen,
                             style.S_BUTTON_HOVER,
@@ -826,18 +717,8 @@ class App(Game):
                             15,
                         )
 
-                        font = pygame.font.SysFont("spendthrift", 40)
-                        text = font.render("Назад", True, style.S_BUTTON_TEXT)
-
-                        button_x_text_1 = width // 2 - text.get_width() // 2
-                        button_y_text_1 = (
-                                height - height // 8 - text.get_height() // 2
-                        )
-
-                        screen.blit(text, (button_x_text_1, button_y_text_1))
+                        screen.blit(text_back, (button_back_x_text, button_back_y_text))
                     else:
-                        pygame.Rect(button_x_1 - 100, button_y_1 - 25, 200, 50)
-
                         pygame.draw.rect(
                             screen,
                             style.S_BUTTON,
@@ -845,16 +726,7 @@ class App(Game):
                             0,
                             15,
                         )
-
-                        font = pygame.font.SysFont("spendthrift", 40)
-                        text = font.render("Назад", True, style.S_BUTTON_TEXT)
-
-                        button_x_text_1 = width // 2 - text.get_width() // 2
-                        button_y_text_1 = (
-                                height - height // 8 - text.get_height() // 2
-                        )
-
-                        screen.blit(text, (button_x_text_1, button_y_text_1))
+                        screen.blit(text_back, (button_back_x_text, button_back_y_text))
 
             pygame.display.flip()
 
