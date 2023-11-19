@@ -1,6 +1,5 @@
 import random
 import sys
-import time
 
 import pygame
 
@@ -48,7 +47,7 @@ class Board:
             15,
         )
 
-        font = pygame.font.SysFont("bahnschrift", 40)
+        font = pygame.font.SysFont("spendthrift", 40)
         text = font.render("Назад", True, style.S_BUTTON_TEXT)
 
         button_x_text = width // 2 - text.get_width() // 2
@@ -56,7 +55,6 @@ class Board:
 
         screen.blit(text, (button_x_text, button_y_text))
         # <==== Назад ====>
-
 
     def render_cell(self, screen, i, j):
         cell_value = self.board[i][j]
@@ -91,22 +89,30 @@ class Board:
         text_width, text_height = font.size(str(cell_value))
 
         text_x = (
-            self.left
-            + self.margin * (j + 1)
-            + j * self.cell_size
-            + (self.cell_size - text_width) // 2
+                self.left
+                + self.margin * (j + 1)
+                + j * self.cell_size
+                + (self.cell_size - text_width) // 2
         )
         text_y = (
-            self.top
-            + self.margin * (i + 1)
-            + i * self.cell_size
-            + (self.cell_size - text_height) // 2
+                self.top
+                + self.margin * (i + 1)
+                + i * self.cell_size
+                + (self.cell_size - text_height) // 2
         )
 
         screen.blit(text_rendered, (text_x, text_y))
 
 
 class Login:
+    def __init__(self, screen_size, settings):
+        self.left = 50
+        self.top = 150
+
+        self.screen_size = screen_size
+
+        self.value = settings.get("value")
+
     def check_empty_cells(self):
         return not all(all(line) for line in self.board)
 
@@ -129,8 +135,8 @@ class Login:
         for i in range(self.value):
             for j in range(self.value - 1):
                 if (
-                    self.board[i][j] == self.board[i][j + 1]
-                    and self.board[i][j + 1] != 0
+                        self.board[i][j] == self.board[i][j + 1]
+                        and self.board[i][j + 1] != 0
                 ):
                     self.board[i][j] = self.board[i][j] * 2
                     self.board[i].pop(j + 1)
@@ -141,10 +147,10 @@ class Login:
             [0] * line.count(0) + [i for i in line if i] for line in self.board
         ]
         for i in range(self.value):
-            for j in range(3, 0, -1):
+            for j in range(self.value - 1, 0, -1):
                 if (
-                    self.board[i][j] == self.board[i][j - 1]
-                    and self.board[i][j] != 0
+                        self.board[i][j] == self.board[i][j - 1]
+                        and self.board[i][j] != 0
                 ):
                     self.board[i][j] *= 2
                     self.board[i].pop(j - 1)
@@ -158,8 +164,8 @@ class Login:
         for i in range(self.value):
             for j in range(self.value - 1):
                 if (
-                    self.board[i][j] == self.board[i][j + 1]
-                    and self.board[i][j + 1] != 0
+                        self.board[i][j] == self.board[i][j + 1]
+                        and self.board[i][j + 1] != 0
                 ):
                     self.board[i][j] = self.board[i][j] * 2
                     self.board[i].pop(j + 1)
@@ -172,10 +178,10 @@ class Login:
             [0] * line.count(0) + [i for i in line if i] for line in self.board
         ]
         for i in range(self.value):
-            for j in range(3, 0, -1):
+            for j in range(self.value - 1, 0, -1):
                 if (
-                    self.board[i][j] == self.board[i][j - 1]
-                    and self.board[i][j] != 0
+                        self.board[i][j] == self.board[i][j - 1]
+                        and self.board[i][j] != 0
                 ):
                     self.board[i][j] *= 2
                     self.board[i].pop(j - 1)
@@ -184,9 +190,7 @@ class Login:
 
 
 class Game(Board, Login):
-    def __init__(self, screen, screen_size, settings):
-        width, height = screen_size
-
+    def __init__(self, screen_size, settings):
         super().__init__(screen_size, settings)
 
     def move(self, key):
@@ -205,20 +209,23 @@ class Game(Board, Login):
 
 
 class App(Game):
-    def __init__(self, screen, screen_size):
+    def __init__(self, screen, screen_size, level):
         screen = screen
         self.screen_size = screen_size
-        self.LEVEL = 1
-        self.settings = funcs.generate_settings(self.LEVEL)
+        self.level = level
+        self.settings = funcs.generate_settings(level)
 
         self.move_sounds = [pygame.mixer.Sound(f'../data/move_music_{i}.wav') for i in range(1, 4)]
+        self.click_sound = pygame.mixer.Sound(f"../data/click_music.wav")
 
         self.start_page(screen)
 
         self.game_page(screen)
 
+        super().__init__(screen_size, self.settings)
+
     def game_page(self, screen):
-        board = Game(screen, self.screen_size, self.settings)
+        board = Game(self.screen_size, self.settings)
 
         while True:
             for event in pygame.event.get():
@@ -226,21 +233,22 @@ class App(Game):
                     self.terminate()
                 if event.type == pygame.KEYDOWN:
                     if event.key in (
-                        pygame.K_LEFT,
-                        pygame.K_RIGHT,
-                        pygame.K_UP,
-                        pygame.K_DOWN,
+                            pygame.K_LEFT,
+                            pygame.K_RIGHT,
+                            pygame.K_UP,
+                            pygame.K_DOWN,
                     ):
                         random.choice(self.move_sounds).play()
                         board.move(event.key)
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                        pos = event.pos
-                        x, y = pos
-                        if (
-                                250 - 100 < x < 250 + 100
-                                and 596 - 25 < y < 596 + 25
-                        ):
-                            self.start_page(screen)
+                    pos = event.pos
+                    x, y = pos
+                    if (
+                            250 - 100 < x < 250 + 100
+                            and 596 - 25 < y < 596 + 25
+                    ):
+                        self.click_sound.play()
+                        self.start_page(screen)
             board.render(screen)
             pygame.display.flip()
 
@@ -250,7 +258,7 @@ class App(Game):
         screen.fill(style.BACKGROUND_COLOR)
 
         # <==== Надпись ====>
-        font = pygame.font.SysFont("bahnschrift", 60)
+        font = pygame.font.SysFont("spendthrift", 60)
         text = font.render("2048", True, style.S_MAIN_TITLE)
 
         text_x = width // 2 - text.get_width() // 2
@@ -273,7 +281,7 @@ class App(Game):
             15,
         )
 
-        font = pygame.font.SysFont("bahnschrift", 40)
+        font = pygame.font.SysFont("spendthrift", 40)
         text = font.render("Играть", True, style.S_BUTTON_TEXT)
 
         button_x_text_1 = width // 2 - text.get_width() // 2
@@ -296,7 +304,7 @@ class App(Game):
             15,
         )
 
-        font = pygame.font.SysFont("bahnschrift", 40)
+        font = pygame.font.SysFont("spendthrift", 40)
         text = font.render("Рекорды", True, style.S_BUTTON_TEXT)
 
         button_x_text_2 = width // 2 - text.get_width() // 2
@@ -319,7 +327,7 @@ class App(Game):
             15,
         )
 
-        font = pygame.font.SysFont("bahnschrift", 40)
+        font = pygame.font.SysFont("spendthrift", 40)
         text = font.render("Правила", True, style.S_BUTTON_TEXT)
 
         button_x_text_3 = width // 2 - text.get_width() // 2
@@ -336,11 +344,14 @@ class App(Game):
                     pos = event.pos
                     x, y = pos
                     if play_button_rect.collidepoint(x, y):
+                        self.click_sound.play()
                         self.game_page(screen)
                     elif records_button_rect.collidepoint(x, y):
+                        self.click_sound.play()
                         # Handle records button click
                         ...
                     elif rules_button_rect.collidepoint(x, y):
+                        self.click_sound.play()
                         self.rules_page(screen)
                 if event.type == pygame.MOUSEMOTION:
                     pos = event.pos
@@ -353,7 +364,7 @@ class App(Game):
                             0,
                             15,
                         )
-                        font = pygame.font.SysFont("bahnschrift", 40)
+                        font = pygame.font.SysFont("spendthrift", 40)
                         text = font.render("Играть", True, style.S_BUTTON_TEXT)
 
                         button_x_text_1 = width // 2 - text.get_width() // 2
@@ -368,7 +379,7 @@ class App(Game):
                             0,
                             15,
                         )
-                        font = pygame.font.SysFont("bahnschrift", 40)
+                        font = pygame.font.SysFont("spendthrift", 40)
                         text = font.render("Играть", True, style.S_BUTTON_TEXT)
 
                         button_x_text_1 = width // 2 - text.get_width() // 2
@@ -384,7 +395,7 @@ class App(Game):
                             0,
                             15,
                         )
-                        font = pygame.font.SysFont("bahnschrift", 40)
+                        font = pygame.font.SysFont("spendthrift", 40)
                         text = font.render("Рекорды", True, style.S_BUTTON_TEXT)
 
                         button_x_text_2 = width // 2 - text.get_width() // 2
@@ -399,7 +410,7 @@ class App(Game):
                             0,
                             15,
                         )
-                        font = pygame.font.SysFont("bahnschrift", 40)
+                        font = pygame.font.SysFont("spendthrift", 40)
                         text = font.render("Рекорды", True, style.S_BUTTON_TEXT)
 
                         button_x_text_2 = width // 2 - text.get_width() // 2
@@ -415,7 +426,7 @@ class App(Game):
                             0,
                             15,
                         )
-                        font = pygame.font.SysFont("bahnschrift", 40)
+                        font = pygame.font.SysFont("spendthrift", 40)
                         text = font.render("Правила", True, style.S_BUTTON_TEXT)
 
                         button_x_text_3 = width // 2 - text.get_width() // 2
@@ -430,7 +441,7 @@ class App(Game):
                             0,
                             15,
                         )
-                        font = pygame.font.SysFont("bahnschrift", 40)
+                        font = pygame.font.SysFont("spendthrift", 40)
                         text = font.render("Правила", True, style.S_BUTTON_TEXT)
 
                         button_x_text_3 = width // 2 - text.get_width() // 2
@@ -455,7 +466,7 @@ class App(Game):
         screen.fill(style.BACKGROUND_COLOR)
 
         # <==== Надпись ====>
-        font = pygame.font.SysFont("bahnschrift", 60)
+        font = pygame.font.SysFont("spendthrift", 60)
         text = font.render("Правила", True, style.S_MAIN_TITLE)
 
         text_x = width // 2 - text.get_width() // 2
@@ -465,8 +476,8 @@ class App(Game):
         # <==== Надпись ====>
 
         # <==== Правила игры ====>
-        rule_font_title = pygame.font.SysFont("bahnschrift", 35)
-        rule_font_text = pygame.font.SysFont("bahnschrift", 15)
+        rule_font_title = pygame.font.SysFont("spendthrift", 35)
+        rule_font_text = pygame.font.SysFont("spendthrift", 15)
         rule_text_1 = rule_font_title.render("Цель игры:", True, style.S_TITLE)
         rule_text_2 = rule_font_text.render("Получить плитку со значением 2048.", True, style.S_TEXT)
         rule_text_3 = rule_font_title.render("Управление:", True, style.S_TITLE)
@@ -500,7 +511,7 @@ class App(Game):
             15,
         )
 
-        font = pygame.font.SysFont("bahnschrift", 40)
+        font = pygame.font.SysFont("spendthrift", 40)
         text = font.render("Назад", True, style.S_BUTTON_TEXT)
 
         button_x_text_1 = width // 2 - text.get_width() // 2
@@ -517,6 +528,7 @@ class App(Game):
                     pos = event.pos
                     x, y = pos
                     if rect.collidepoint(x, y):
+                        self.click_sound.play()
                         self.start_page(screen)
             pygame.display.flip()
 
@@ -529,11 +541,13 @@ class App(Game):
 
 def main():
     pygame.init()
-    SCREEN_SIZE = (500, 650)
-    screen = pygame.display.set_mode(SCREEN_SIZE)
+    screen_size = (500, 650)
+    screen = pygame.display.set_mode(screen_size)
     pygame.display.set_caption("2048")
 
-    app = App(screen, SCREEN_SIZE)
+    level = 2
+
+    App(screen, screen_size, level)
 
 
 if __name__ == "__main__":
