@@ -32,11 +32,33 @@ class Board:
                 self.render_cell(screen, i, j)
 
     def render_decoration(self, screen):
+        width, height = self.screen_size
+
+        font = pygame.font.SysFont("spendthrift", 70)
+        text = font.render(
+            f"{self.value} x {self.value}", True, style.S_BUTTON_TEXT
+        )
+
+        button_x_text = width // 2 - text.get_width() // 2
+        button_y_text = 120 - text.get_height() // 2
+
+        screen.blit(text, (button_x_text, button_y_text))
+
+        pygame.draw.rect(screen, style.S_TABLE_SCORE, (250, 10, 100, 50), 0, 5)
+        pygame.draw.rect(
+            screen, style.S_TABLE_SCORE_BORDER, (250, 10, 100, 50), 5, 5
+        )
+
+        pygame.draw.rect(screen, style.S_TABLE_SCORE, (360, 10, 100, 50), 0, 5)
+        pygame.draw.rect(
+            screen, style.S_TABLE_SCORE_BORDER, (360, 10, 100, 50), 5, 5
+        )
+
+        # Прямоугольник для клеточек
         pygame.draw.rect(
             screen, style.RECT, (self.left, self.top, 400, 400), 0, 15
         )
-
-        width, height = self.screen_size
+        # Прямоугольник для клеточек
 
         # <==== Назад ====>
         button_x = width // 2
