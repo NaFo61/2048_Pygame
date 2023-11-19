@@ -1,4 +1,5 @@
 import random
+import datetime
 import sys
 
 import pygame
@@ -31,7 +32,9 @@ class Board:
                 self.render_cell(screen, i, j)
 
     def render_decoration(self, screen):
-        pygame.draw.rect(screen, style.RECT, (self.left, self.top, 400, 400), 0, 15)
+        pygame.draw.rect(
+            screen, style.RECT, (self.left, self.top, 400, 400), 0, 15
+        )
 
         width, height = self.screen_size
 
@@ -73,7 +76,8 @@ class Board:
         if flag:
             self.render_cell_text(screen, cell_value, i, j)
 
-    def draw_cell_rect(self, screen, rect, color):
+    @staticmethod
+    def draw_cell_rect(screen, rect, color):
         """Рисует ячейку"""
         border_color = pygame.Color(color)
 
@@ -89,30 +93,22 @@ class Board:
         text_width, text_height = font.size(str(cell_value))
 
         text_x = (
-                self.left
-                + self.margin * (j + 1)
-                + j * self.cell_size
-                + (self.cell_size - text_width) // 2
+            self.left
+            + self.margin * (j + 1)
+            + j * self.cell_size
+            + (self.cell_size - text_width) // 2
         )
         text_y = (
-                self.top
-                + self.margin * (i + 1)
-                + i * self.cell_size
-                + (self.cell_size - text_height) // 2
+            self.top
+            + self.margin * (i + 1)
+            + i * self.cell_size
+            + (self.cell_size - text_height) // 2
         )
 
         screen.blit(text_rendered, (text_x, text_y))
 
 
-class Logic:
-    def __init__(self, screen_size, settings):
-        self.left = 50
-        self.top = 150
-
-        self.screen_size = screen_size
-
-        self.value = settings.get("value")
-
+class LoginBoard(Board):
     def check_empty_cells(self):
         return not all(all(line) for line in self.board)
 
@@ -135,8 +131,8 @@ class Logic:
         for i in range(self.value):
             for j in range(self.value - 1):
                 if (
-                        self.board[i][j] == self.board[i][j + 1]
-                        and self.board[i][j + 1] != 0
+                    self.board[i][j] == self.board[i][j + 1]
+                    and self.board[i][j + 1] != 0
                 ):
                     self.board[i][j] = self.board[i][j] * 2
                     self.board[i].pop(j + 1)
@@ -149,8 +145,8 @@ class Logic:
         for i in range(self.value):
             for j in range(self.value - 1, 0, -1):
                 if (
-                        self.board[i][j] == self.board[i][j - 1]
-                        and self.board[i][j] != 0
+                    self.board[i][j] == self.board[i][j - 1]
+                    and self.board[i][j] != 0
                 ):
                     self.board[i][j] *= 2
                     self.board[i].pop(j - 1)
@@ -164,8 +160,8 @@ class Logic:
         for i in range(self.value):
             for j in range(self.value - 1):
                 if (
-                        self.board[i][j] == self.board[i][j + 1]
-                        and self.board[i][j + 1] != 0
+                    self.board[i][j] == self.board[i][j + 1]
+                    and self.board[i][j + 1] != 0
                 ):
                     self.board[i][j] = self.board[i][j] * 2
                     self.board[i].pop(j + 1)
@@ -180,8 +176,8 @@ class Logic:
         for i in range(self.value):
             for j in range(self.value - 1, 0, -1):
                 if (
-                        self.board[i][j] == self.board[i][j - 1]
-                        and self.board[i][j] != 0
+                    self.board[i][j] == self.board[i][j - 1]
+                    and self.board[i][j] != 0
                 ):
                     self.board[i][j] *= 2
                     self.board[i].pop(j - 1)
@@ -189,7 +185,7 @@ class Logic:
         self.board = [list(line) for line in zip(*self.board)]
 
 
-class Game(Board, Logic):
+class Game(LoginBoard):
     def __init__(self, screen_size, settings):
         super().__init__(screen_size, settings)
 
@@ -215,7 +211,10 @@ class App(Game):
         self.level = 1
         self.settings = funcs.generate_settings(self.level)
 
-        self.move_sounds = [pygame.mixer.Sound(f'../data/move_music_{i}.wav') for i in range(1, 4)]
+        self.move_sounds = [
+            pygame.mixer.Sound(f"../data/move_music_{i}.wav")
+            for i in range(1, 4)
+        ]
         self.click_sound = pygame.mixer.Sound(f"../data/click_music.wav")
 
         self.start_page(screen)
@@ -236,20 +235,17 @@ class App(Game):
                     self.terminate()
                 if event.type == pygame.KEYDOWN:
                     if event.key in (
-                            pygame.K_LEFT,
-                            pygame.K_RIGHT,
-                            pygame.K_UP,
-                            pygame.K_DOWN,
+                        pygame.K_LEFT,
+                        pygame.K_RIGHT,
+                        pygame.K_UP,
+                        pygame.K_DOWN,
                     ):
                         random.choice(self.move_sounds).play()
                         board.move(event.key)
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pos = event.pos
                     x, y = pos
-                    if (
-                            250 - 100 < x < 250 + 100
-                            and 596 - 25 < y < 596 + 25
-                    ):
+                    if 250 - 100 < x < 250 + 100 and 596 - 25 < y < 596 + 25:
                         self.click_sound.play()
                         self.choice_page(screen)
             board.render(screen)
@@ -260,21 +256,13 @@ class App(Game):
 
         screen.fill(style.BACKGROUND_COLOR)
 
-        # <==== Надпись ====>
-        font = pygame.font.SysFont("spendthrift", 60)
-        text = font.render("2048", True, style.S_MAIN_TITLE)
-
-        text_x = width // 2 - text.get_width() // 2
-        text_y = height // 3 - text.get_height() // 2
-
-        screen.blit(text, (text_x, text_y))
-        # <==== Надпись ====>
-
         # <==== Играть ====>
         button_x_1 = width // 2
         button_y_1 = height // 2
 
-        play_button_rect = pygame.Rect(button_x_1 - 100, button_y_1 - 25, 200, 50)
+        play_button_rect = pygame.Rect(
+            button_x_1 - 100, button_y_1 - 25, 200, 50
+        )
 
         pygame.draw.rect(
             screen,
@@ -297,7 +285,9 @@ class App(Game):
         button_x_2 = width // 2
         button_y_2 = height // 2 + 80
 
-        records_button_rect = pygame.Rect(button_x_2 - 100, button_y_2 - 25, 200, 50)
+        records_button_rect = pygame.Rect(
+            button_x_2 - 100, button_y_2 - 25, 200, 50
+        )
 
         pygame.draw.rect(
             screen,
@@ -320,7 +310,9 @@ class App(Game):
         button_x_3 = width // 2
         button_y_3 = height // 2 + 160
 
-        rules_button_rect = pygame.Rect(button_x_3 - 100, button_y_3 - 25, 200, 50)
+        rules_button_rect = pygame.Rect(
+            button_x_3 - 100, button_y_3 - 25, 200, 50
+        )
 
         pygame.draw.rect(
             screen,
@@ -340,6 +332,25 @@ class App(Game):
         # <==== Правила ====>
 
         while True:
+            color_index = datetime.datetime.now().second % 7
+            color = [
+                (255, 0, 0),
+                (255, 165, 0),
+                (255, 255, 0),
+                (0, 255, 0),
+                (0, 0, 255),
+                (75, 0, 130),
+                (148, 0, 211),
+            ][color_index]
+
+            # Пересоздание текста с новым цветом
+            font = pygame.font.SysFont("spendthrift", 150)
+            text = font.render("2048", True, color)
+            text_x = width // 2 - text.get_width() // 2
+            text_y = height // 3 - text.get_height() // 2
+
+            screen.blit(text, (text_x, text_y))
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.terminate()
@@ -399,10 +410,14 @@ class App(Game):
                             15,
                         )
                         font = pygame.font.SysFont("spendthrift", 40)
-                        text = font.render("Рекорды", True, style.S_BUTTON_TEXT)
+                        text = font.render(
+                            "Рекорды", True, style.S_BUTTON_TEXT
+                        )
 
                         button_x_text_2 = width // 2 - text.get_width() // 2
-                        button_y_text_2 = height // 2 + 80 - text.get_height() // 2
+                        button_y_text_2 = (
+                            height // 2 + 80 - text.get_height() // 2
+                        )
 
                         screen.blit(text, (button_x_text_2, button_y_text_2))
                     else:
@@ -414,10 +429,14 @@ class App(Game):
                             15,
                         )
                         font = pygame.font.SysFont("spendthrift", 40)
-                        text = font.render("Рекорды", True, style.S_BUTTON_TEXT)
+                        text = font.render(
+                            "Рекорды", True, style.S_BUTTON_TEXT
+                        )
 
                         button_x_text_2 = width // 2 - text.get_width() // 2
-                        button_y_text_2 = height // 2 + 80 - text.get_height() // 2
+                        button_y_text_2 = (
+                            height // 2 + 80 - text.get_height() // 2
+                        )
 
                         screen.blit(text, (button_x_text_2, button_y_text_2))
 
@@ -430,10 +449,14 @@ class App(Game):
                             15,
                         )
                         font = pygame.font.SysFont("spendthrift", 40)
-                        text = font.render("Правила", True, style.S_BUTTON_TEXT)
+                        text = font.render(
+                            "Правила", True, style.S_BUTTON_TEXT
+                        )
 
                         button_x_text_3 = width // 2 - text.get_width() // 2
-                        button_y_text_3 = height // 2 + 160 - text.get_height() // 2
+                        button_y_text_3 = (
+                            height // 2 + 160 - text.get_height() // 2
+                        )
 
                         screen.blit(text, (button_x_text_3, button_y_text_3))
                     else:
@@ -445,10 +468,14 @@ class App(Game):
                             15,
                         )
                         font = pygame.font.SysFont("spendthrift", 40)
-                        text = font.render("Правила", True, style.S_BUTTON_TEXT)
+                        text = font.render(
+                            "Правила", True, style.S_BUTTON_TEXT
+                        )
 
                         button_x_text_3 = width // 2 - text.get_width() // 2
-                        button_y_text_3 = height // 2 + 160 - text.get_height() // 2
+                        button_y_text_3 = (
+                            height // 2 + 160 - text.get_height() // 2
+                        )
 
                         screen.blit(text, (button_x_text_3, button_y_text_3))
 
@@ -547,15 +574,13 @@ class App(Game):
         screen.blit(text, (button_x_text_3, button_y_text_3))
         # <==== 8 x 8 ====>
 
-
-
-
-
         # <==== Назад ====>
         button_back_x = width // 2
         button_back_y = height - height // 8
 
-        button_back = pygame.Rect(button_back_x - 100, button_back_y - 25, 200, 50)
+        button_back = pygame.Rect(
+            button_back_x - 100, button_back_y - 25, 200, 50
+        )
 
         pygame.draw.rect(
             screen,
@@ -642,7 +667,9 @@ class App(Game):
                         text = font.render("6 x 6", True, style.S_BUTTON_TEXT)
 
                         button_x_text_2 = width // 2 - text.get_width() // 2
-                        button_y_text_2 = height // 3 + 100 - text.get_height() // 2
+                        button_y_text_2 = (
+                            height // 3 + 100 - text.get_height() // 2
+                        )
 
                         screen.blit(text, (button_x_text_2, button_y_text_2))
                     else:
@@ -657,7 +684,9 @@ class App(Game):
                         text = font.render("6 x 6", True, style.S_BUTTON_TEXT)
 
                         button_x_text_2 = width // 2 - text.get_width() // 2
-                        button_y_text_2 = height // 3 + 100 - text.get_height() // 2
+                        button_y_text_2 = (
+                            height // 3 + 100 - text.get_height() // 2
+                        )
 
                         screen.blit(text, (button_x_text_2, button_y_text_2))
 
@@ -673,7 +702,9 @@ class App(Game):
                         text = font.render("8 x 8", True, style.S_BUTTON_TEXT)
 
                         button_x_text_3 = width // 2 - text.get_width() // 2
-                        button_y_text_3 = height // 3 + 200 - text.get_height() // 2
+                        button_y_text_3 = (
+                            height // 3 + 200 - text.get_height() // 2
+                        )
 
                         screen.blit(text, (button_x_text_3, button_y_text_3))
                     else:
@@ -688,11 +719,12 @@ class App(Game):
                         text = font.render("8 x 8", True, style.S_BUTTON_TEXT)
 
                         button_x_text_3 = width // 2 - text.get_width() // 2
-                        button_y_text_3 = height // 3 + 200 - text.get_height() // 2
+                        button_y_text_3 = (
+                            height // 3 + 200 - text.get_height() // 2
+                        )
 
                         screen.blit(text, (button_x_text_3, button_y_text_3))
                     if button_back.collidepoint(x, y):
-
                         pygame.Rect(button_x_1 - 100, button_y_1 - 25, 200, 50)
 
                         pygame.draw.rect(
@@ -707,7 +739,9 @@ class App(Game):
                         text = font.render("Назад", True, style.S_BUTTON_TEXT)
 
                         button_x_text_1 = width // 2 - text.get_width() // 2
-                        button_y_text_1 = height - height // 8 - text.get_height() // 2
+                        button_y_text_1 = (
+                            height - height // 8 - text.get_height() // 2
+                        )
 
                         screen.blit(text, (button_x_text_1, button_y_text_1))
                     else:
@@ -725,12 +759,13 @@ class App(Game):
                         text = font.render("Назад", True, style.S_BUTTON_TEXT)
 
                         button_x_text_1 = width // 2 - text.get_width() // 2
-                        button_y_text_1 = height - height // 8 - text.get_height() // 2
+                        button_y_text_1 = (
+                            height - height // 8 - text.get_height() // 2
+                        )
 
                         screen.blit(text, (button_x_text_1, button_y_text_1))
 
             pygame.display.flip()
-
 
     def rules_page(self, screen):
         """
@@ -760,22 +795,57 @@ class App(Game):
         rule_font_title = pygame.font.SysFont("spendthrift", 35)
         rule_font_text = pygame.font.SysFont("spendthrift", 15)
         rule_text_1 = rule_font_title.render("Цель игры:", True, style.S_TITLE)
-        rule_text_2 = rule_font_text.render("Получить плитку со значением 2048.", True, style.S_TEXT)
-        rule_text_3 = rule_font_title.render("Управление:", True, style.S_TITLE)
-        rule_text_4 = rule_font_text.render("Используйте стрелки для перемещения всех плиток.", True, style.S_TEXT)
-        rule_text_5 = rule_font_text.render("Плитки с одинаковыми значениями сливаются вместе.", True, style.S_TEXT)
+        rule_text_2 = rule_font_text.render(
+            "Получить плитку со значением 2048.", True, style.S_TEXT
+        )
+        rule_text_3 = rule_font_title.render(
+            "Управление:", True, style.S_TITLE
+        )
+        rule_text_4 = rule_font_text.render(
+            "Используйте стрелки для перемещения всех плиток.",
+            True,
+            style.S_TEXT,
+        )
+        rule_text_5 = rule_font_text.render(
+            "Плитки с одинаковыми значениями сливаются вместе.",
+            True,
+            style.S_TEXT,
+        )
         rule_text_6 = rule_font_title.render("Проигрыш:", True, style.S_TITLE)
-        rule_text_7 = rule_font_text.render("Когда пустых клеток на поле не останется.", True, style.S_TEXT)
+        rule_text_7 = rule_font_text.render(
+            "Когда пустых клеток на поле не останется.", True, style.S_TEXT
+        )
 
         rule_text_y = height // 4
 
-        screen.blit(rule_text_1, (width // 2 - rule_text_1.get_width() // 2, rule_text_y))
-        screen.blit(rule_text_2, (width // 2 - rule_text_2.get_width() // 2, rule_text_y + 40))
-        screen.blit(rule_text_3, (width // 2 - rule_text_3.get_width() // 2, rule_text_y + 100))
-        screen.blit(rule_text_4, (width // 2 - rule_text_4.get_width() // 2, rule_text_y + 140))
-        screen.blit(rule_text_5, (width // 2 - rule_text_5.get_width() // 2, rule_text_y + 180))
-        screen.blit(rule_text_6, (width // 2 - rule_text_6.get_width() // 2, rule_text_y + 240))
-        screen.blit(rule_text_7, (width // 2 - rule_text_7.get_width() // 2, rule_text_y + 280))
+        screen.blit(
+            rule_text_1,
+            (width // 2 - rule_text_1.get_width() // 2, rule_text_y),
+        )
+        screen.blit(
+            rule_text_2,
+            (width // 2 - rule_text_2.get_width() // 2, rule_text_y + 40),
+        )
+        screen.blit(
+            rule_text_3,
+            (width // 2 - rule_text_3.get_width() // 2, rule_text_y + 100),
+        )
+        screen.blit(
+            rule_text_4,
+            (width // 2 - rule_text_4.get_width() // 2, rule_text_y + 140),
+        )
+        screen.blit(
+            rule_text_5,
+            (width // 2 - rule_text_5.get_width() // 2, rule_text_y + 180),
+        )
+        screen.blit(
+            rule_text_6,
+            (width // 2 - rule_text_6.get_width() // 2, rule_text_y + 240),
+        )
+        screen.blit(
+            rule_text_7,
+            (width // 2 - rule_text_7.get_width() // 2, rule_text_y + 280),
+        )
         # <==== Правила игры ====>
 
         # <==== Назад ====>
