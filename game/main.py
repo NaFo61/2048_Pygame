@@ -61,6 +61,16 @@ class Board:
         button_y_text = 25 - text.get_height() // 2
 
         screen.blit(text, (button_x_text, button_y_text))
+
+        font = pygame.font.SysFont("spendthrift", 30)
+        text = font.render(
+            str(self.points), True, style.S_TABLE_SCORE_TEXT_VALUE
+        )
+
+        button_x_text = 300 - text.get_width() // 2
+        button_y_text = 40 - text.get_height() // 2
+
+        screen.blit(text, (button_x_text, button_y_text))
         # <===== Твои очки =====>
 
         # <===== Лучшие очки =====>
@@ -182,9 +192,12 @@ class LoginBoard(Board):
                         self.board[i][j] == self.board[i][j + 1]
                         and self.board[i][j + 1] != 0
                 ):
-                    self.board[i][j] = self.board[i][j] * 2
+                    result_of_cell = self.board[i][j] * 2
+                    self.board[i][j] = result_of_cell
                     self.board[i].pop(j + 1)
                     self.board[i].append(0)
+
+                    self.points += result_of_cell
 
     def move_right(self):
         self.board = [
@@ -196,9 +209,12 @@ class LoginBoard(Board):
                         self.board[i][j] == self.board[i][j - 1]
                         and self.board[i][j] != 0
                 ):
-                    self.board[i][j] *= 2
+                    result_of_cell = self.board[i][j] * 2
+                    self.board[i][j] = result_of_cell
                     self.board[i].pop(j - 1)
                     self.board[i].insert(0, 0)
+
+                    self.points += result_of_cell
 
     def move_up(self):
         self.board = [list(line) for line in zip(*self.board)]
@@ -211,9 +227,12 @@ class LoginBoard(Board):
                         self.board[i][j] == self.board[i][j + 1]
                         and self.board[i][j + 1] != 0
                 ):
-                    self.board[i][j] = self.board[i][j] * 2
+                    result_of_cell = self.board[i][j] * 2
+                    self.board[i][j] = result_of_cell
                     self.board[i].pop(j + 1)
                     self.board[i].append(0)
+
+                    self.points += result_of_cell
         self.board = [list(line) for line in zip(*self.board)]
 
     def move_down(self):
@@ -227,14 +246,18 @@ class LoginBoard(Board):
                         self.board[i][j] == self.board[i][j - 1]
                         and self.board[i][j] != 0
                 ):
-                    self.board[i][j] *= 2
+                    result_of_cell = self.board[i][j] * 2
+                    self.board[i][j] = result_of_cell
                     self.board[i].pop(j - 1)
                     self.board[i].insert(0, 0)
+
+                    self.points += result_of_cell
         self.board = [list(line) for line in zip(*self.board)]
 
 
 class Game(LoginBoard):
     def __init__(self, screen_size, settings):
+        self.points = 0
         super().__init__(screen_size, settings)
 
     def move(self, key):
@@ -253,9 +276,9 @@ class Game(LoginBoard):
 
 
 class App(Game):
-    def __init__(self, screen, screen_size):
+    def __init__(self, screen):
         screen = screen
-        self.screen_size = screen_size
+        self.screen_size = screen.get_size()
         self.level = 1
         self.settings = funcs.generate_settings(self.level)
 
@@ -267,7 +290,7 @@ class App(Game):
 
         self.start_page(screen)
 
-        super().__init__(screen_size, self.settings)
+        super().__init__(self.screen_size, self.settings)
 
     def update_settings(self, level):
         self.level = level
@@ -535,7 +558,6 @@ class App(Game):
         # <==== Надпись ====>
 
         font = pygame.font.SysFont("spendthrift", 40)  # Шрифт для кнопок
-
 
         # <==== 4 x 4 ====>
         button_x_1 = width // 2
@@ -880,7 +902,7 @@ def main():
     screen = pygame.display.set_mode(screen_size)
     pygame.display.set_caption("2048")
 
-    App(screen, screen_size)
+    App(screen)
 
 
 if __name__ == "__main__":
