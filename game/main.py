@@ -34,6 +34,7 @@ class Board:
     def render_decoration(self, screen):
         width, height = self.screen_size
 
+        # <===== Надпись размер поля =====>
         font = pygame.font.SysFont("spendthrift", 70)
         text = font.render(
             f"{self.value} x {self.value}", True, style.S_BUTTON_TEXT
@@ -43,16 +44,41 @@ class Board:
         button_y_text = 120 - text.get_height() // 2
 
         screen.blit(text, (button_x_text, button_y_text))
+        # <===== Надпись размер поля =====>
 
-        pygame.draw.rect(screen, style.S_TABLE_SCORE, (250, 10, 100, 50), 0, 5)
+        # <===== Твои очки =====>
+        pygame.draw.rect(
+            screen, style.S_TABLE_SCORE, (250, 10, 100, 50), 0, 5
+        )
         pygame.draw.rect(
             screen, style.S_TABLE_SCORE_BORDER, (250, 10, 100, 50), 5, 5
         )
+        font = pygame.font.SysFont("spendthrift", 20)
+        text = font.render("Счет", True, style.S_TABLE_SCORE_TEXT
+        )
 
-        pygame.draw.rect(screen, style.S_TABLE_SCORE, (360, 10, 100, 50), 0, 5)
+        button_x_text = 300 - text.get_width() // 2
+        button_y_text = 25 - text.get_height() // 2
+
+        screen.blit(text, (button_x_text, button_y_text))
+        # <===== Твои очки =====>
+
+        # <===== Лучшие очки =====>
+        pygame.draw.rect(
+            screen, style.S_TABLE_SCORE, (360, 10, 100, 50), 0, 5
+        )
         pygame.draw.rect(
             screen, style.S_TABLE_SCORE_BORDER, (360, 10, 100, 50), 5, 5
         )
+        font = pygame.font.SysFont("spendthrift", 20)
+        text = font.render("Лучший", True, style.S_TABLE_SCORE_TEXT
+        )
+
+        button_x_text = 410 - text.get_width() // 2
+        button_y_text = 25 - text.get_height() // 2
+
+        screen.blit(text, (button_x_text, button_y_text))
+        # <===== Лучшие очки =====>
 
         # Прямоугольник для клеточек
         pygame.draw.rect(
@@ -115,16 +141,16 @@ class Board:
         text_width, text_height = font.size(str(cell_value))
 
         text_x = (
-            self.left
-            + self.margin * (j + 1)
-            + j * self.cell_size
-            + (self.cell_size - text_width) // 2
+                self.left
+                + self.margin * (j + 1)
+                + j * self.cell_size
+                + (self.cell_size - text_width) // 2
         )
         text_y = (
-            self.top
-            + self.margin * (i + 1)
-            + i * self.cell_size
-            + (self.cell_size - text_height) // 2
+                self.top
+                + self.margin * (i + 1)
+                + i * self.cell_size
+                + (self.cell_size - text_height) // 2
         )
 
         screen.blit(text_rendered, (text_x, text_y))
@@ -153,8 +179,8 @@ class LoginBoard(Board):
         for i in range(self.value):
             for j in range(self.value - 1):
                 if (
-                    self.board[i][j] == self.board[i][j + 1]
-                    and self.board[i][j + 1] != 0
+                        self.board[i][j] == self.board[i][j + 1]
+                        and self.board[i][j + 1] != 0
                 ):
                     self.board[i][j] = self.board[i][j] * 2
                     self.board[i].pop(j + 1)
@@ -167,8 +193,8 @@ class LoginBoard(Board):
         for i in range(self.value):
             for j in range(self.value - 1, 0, -1):
                 if (
-                    self.board[i][j] == self.board[i][j - 1]
-                    and self.board[i][j] != 0
+                        self.board[i][j] == self.board[i][j - 1]
+                        and self.board[i][j] != 0
                 ):
                     self.board[i][j] *= 2
                     self.board[i].pop(j - 1)
@@ -182,8 +208,8 @@ class LoginBoard(Board):
         for i in range(self.value):
             for j in range(self.value - 1):
                 if (
-                    self.board[i][j] == self.board[i][j + 1]
-                    and self.board[i][j + 1] != 0
+                        self.board[i][j] == self.board[i][j + 1]
+                        and self.board[i][j + 1] != 0
                 ):
                     self.board[i][j] = self.board[i][j] * 2
                     self.board[i].pop(j + 1)
@@ -198,8 +224,8 @@ class LoginBoard(Board):
         for i in range(self.value):
             for j in range(self.value - 1, 0, -1):
                 if (
-                    self.board[i][j] == self.board[i][j - 1]
-                    and self.board[i][j] != 0
+                        self.board[i][j] == self.board[i][j - 1]
+                        and self.board[i][j] != 0
                 ):
                     self.board[i][j] *= 2
                     self.board[i].pop(j - 1)
@@ -257,10 +283,10 @@ class App(Game):
                     self.terminate()
                 if event.type == pygame.KEYDOWN:
                     if event.key in (
-                        pygame.K_LEFT,
-                        pygame.K_RIGHT,
-                        pygame.K_UP,
-                        pygame.K_DOWN,
+                            pygame.K_LEFT,
+                            pygame.K_RIGHT,
+                            pygame.K_UP,
+                            pygame.K_DOWN,
                     ):
                         random.choice(self.move_sounds).play()
                         board.move(event.key)
@@ -438,7 +464,7 @@ class App(Game):
 
                         button_x_text_2 = width // 2 - text.get_width() // 2
                         button_y_text_2 = (
-                            height // 2 + 80 - text.get_height() // 2
+                                height // 2 + 80 - text.get_height() // 2
                         )
 
                         screen.blit(text, (button_x_text_2, button_y_text_2))
@@ -457,7 +483,7 @@ class App(Game):
 
                         button_x_text_2 = width // 2 - text.get_width() // 2
                         button_y_text_2 = (
-                            height // 2 + 80 - text.get_height() // 2
+                                height // 2 + 80 - text.get_height() // 2
                         )
 
                         screen.blit(text, (button_x_text_2, button_y_text_2))
@@ -477,7 +503,7 @@ class App(Game):
 
                         button_x_text_3 = width // 2 - text.get_width() // 2
                         button_y_text_3 = (
-                            height // 2 + 160 - text.get_height() // 2
+                                height // 2 + 160 - text.get_height() // 2
                         )
 
                         screen.blit(text, (button_x_text_3, button_y_text_3))
@@ -496,7 +522,7 @@ class App(Game):
 
                         button_x_text_3 = width // 2 - text.get_width() // 2
                         button_y_text_3 = (
-                            height // 2 + 160 - text.get_height() // 2
+                                height // 2 + 160 - text.get_height() // 2
                         )
 
                         screen.blit(text, (button_x_text_3, button_y_text_3))
@@ -690,7 +716,7 @@ class App(Game):
 
                         button_x_text_2 = width // 2 - text.get_width() // 2
                         button_y_text_2 = (
-                            height // 3 + 100 - text.get_height() // 2
+                                height // 3 + 100 - text.get_height() // 2
                         )
 
                         screen.blit(text, (button_x_text_2, button_y_text_2))
@@ -707,7 +733,7 @@ class App(Game):
 
                         button_x_text_2 = width // 2 - text.get_width() // 2
                         button_y_text_2 = (
-                            height // 3 + 100 - text.get_height() // 2
+                                height // 3 + 100 - text.get_height() // 2
                         )
 
                         screen.blit(text, (button_x_text_2, button_y_text_2))
@@ -725,7 +751,7 @@ class App(Game):
 
                         button_x_text_3 = width // 2 - text.get_width() // 2
                         button_y_text_3 = (
-                            height // 3 + 200 - text.get_height() // 2
+                                height // 3 + 200 - text.get_height() // 2
                         )
 
                         screen.blit(text, (button_x_text_3, button_y_text_3))
@@ -742,7 +768,7 @@ class App(Game):
 
                         button_x_text_3 = width // 2 - text.get_width() // 2
                         button_y_text_3 = (
-                            height // 3 + 200 - text.get_height() // 2
+                                height // 3 + 200 - text.get_height() // 2
                         )
 
                         screen.blit(text, (button_x_text_3, button_y_text_3))
@@ -762,7 +788,7 @@ class App(Game):
 
                         button_x_text_1 = width // 2 - text.get_width() // 2
                         button_y_text_1 = (
-                            height - height // 8 - text.get_height() // 2
+                                height - height // 8 - text.get_height() // 2
                         )
 
                         screen.blit(text, (button_x_text_1, button_y_text_1))
@@ -782,7 +808,7 @@ class App(Game):
 
                         button_x_text_1 = width // 2 - text.get_width() // 2
                         button_y_text_1 = (
-                            height - height // 8 - text.get_height() // 2
+                                height - height // 8 - text.get_height() // 2
                         )
 
                         screen.blit(text, (button_x_text_1, button_y_text_1))
