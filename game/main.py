@@ -209,11 +209,11 @@ class Game(Board, Logic):
 
 
 class App(Game):
-    def __init__(self, screen, screen_size, level):
+    def __init__(self, screen, screen_size):
         screen = screen
         self.screen_size = screen_size
-        self.level = level
-        self.settings = funcs.generate_settings(level)
+        self.level = 1
+        self.settings = funcs.generate_settings(self.level)
 
         self.move_sounds = [pygame.mixer.Sound(f'../data/move_music_{i}.wav') for i in range(1, 4)]
         self.click_sound = pygame.mixer.Sound(f"../data/click_music.wav")
@@ -221,6 +221,10 @@ class App(Game):
         self.start_page(screen)
 
         super().__init__(screen_size, self.settings)
+
+    def update_settings(self, level):
+        self.level = level
+        self.settings = funcs.generate_settings(level)
 
     def game_page(self, screen):
         screen.fill(style.BACKGROUND_COLOR)
@@ -247,7 +251,7 @@ class App(Game):
                             and 596 - 25 < y < 596 + 25
                     ):
                         self.click_sound.play()
-                        self.change_level(screen)
+                        self.choice_page(screen)
             board.render(screen)
             pygame.display.flip()
 
@@ -344,7 +348,7 @@ class App(Game):
                     x, y = pos
                     if play_button_rect.collidepoint(x, y):
                         self.click_sound.play()
-                        self.change_level(screen)
+                        self.choice_page(screen)
                     elif records_button_rect.collidepoint(x, y):
                         self.click_sound.play()
                         # Handle records button click
@@ -450,7 +454,7 @@ class App(Game):
 
             pygame.display.flip()
 
-    def change_level(self, screen):
+    def choice_page(self, screen):
         """
         Change the level.
 
@@ -579,15 +583,15 @@ class App(Game):
                     x, y = pos
                     if button_4_x_4.collidepoint(x, y):
                         self.click_sound.play()
-                        self.level = 1
+                        self.update_settings(1)
                         self.game_page(screen)
                     if button_6_x_6.collidepoint(x, y):
                         self.click_sound.play()
-                        self.level = 2
+                        self.update_settings(2)
                         self.game_page(screen)
                     if button_8_x_8.collidepoint(x, y):
                         self.click_sound.play()
-                        self.level = 3
+                        self.update_settings(3)
                         self.game_page(screen)
                     if button_back.collidepoint(x, y):
                         self.click_sound.play()
@@ -822,9 +826,7 @@ def main():
     screen = pygame.display.set_mode(screen_size)
     pygame.display.set_caption("2048")
 
-    level = 2
-
-    App(screen, screen_size, level)
+    App(screen, screen_size)
 
 
 if __name__ == "__main__":
