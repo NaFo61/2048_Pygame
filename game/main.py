@@ -31,7 +31,7 @@ class Board:
             for j in range(self.value):
                 self.render_cell(screen, i, j)
 
-    def render_decoration(self, screen):
+    def render_decoration(self, screen, draw_back_button=False):
         width, height = self.screen_size
 
         # <===== Надпись размер поля =====>
@@ -85,27 +85,27 @@ class Board:
             screen, style.RECT, (self.left, self.top, 400, 400), 0, 15
         )
         # Прямоугольник для клеточек
+        if draw_back_button:
+            # <==== Назад ====>
+            button_x = width // 2
+            button_y = height - height // 12
 
-        # <==== Назад ====>
-        button_x = width // 2
-        button_y = height - height // 12
+            pygame.draw.rect(
+                screen,
+                style.S_BUTTON,
+                (button_x - 100, button_y - 25, 200, 50),
+                0,
+                15,
+            )
 
-        pygame.draw.rect(
-            screen,
-            style.S_BUTTON,
-            (button_x - 100, button_y - 25, 200, 50),
-            0,
-            15,
-        )
+            font = pygame.font.SysFont("spendthrift", 40)
+            text = font.render("Назад", True, style.S_BUTTON_TEXT)
 
-        font = pygame.font.SysFont("spendthrift", 40)
-        text = font.render("Назад", True, style.S_BUTTON_TEXT)
+            button_x_text = width // 2 - text.get_width() // 2
+            button_y_text = height - height // 12 - text.get_height() // 2
 
-        button_x_text = width // 2 - text.get_width() // 2
-        button_y_text = height - height // 12 - text.get_height() // 2
-
-        screen.blit(text, (button_x_text, button_y_text))
-        # <==== Назад ====>
+            screen.blit(text, (button_x_text, button_y_text))
+            # <==== Назад ====>
 
     def render_cell(self, screen, i, j):
         cell_value = self.board[i][j]
@@ -274,8 +274,11 @@ class App(Game):
         self.settings = funcs.generate_settings(level)
 
     def game_page(self, screen):
+        width, height = self.screen_size
+
         screen.fill(style.BACKGROUND_COLOR)
         board = Game(self.screen_size, self.settings)
+        board.render_decoration(screen, True)
 
         while True:
             for event in pygame.event.get():
@@ -296,9 +299,49 @@ class App(Game):
                     if 250 - 100 < x < 250 + 100 and 596 - 25 < y < 596 + 25:
                         self.click_sound.play()
                         self.choice_page(screen)
+                if event.type == pygame.MOUSEMOTION:
+                    pos = event.pos
+                    x, y = pos
+                    if 250 - 100 < x < 250 + 100 and 596 - 25 < y < 596 + 25:
+                        button_x = width // 2
+                        button_y = height - height // 12
+
+                        pygame.draw.rect(
+                            screen,
+                            style.S_BUTTON_HOVER,
+                            (button_x - 100, button_y - 25, 200, 50),
+                            0,
+                            15,
+                        )
+
+                        font = pygame.font.SysFont("spendthrift", 40)
+                        text = font.render("Назад", True, style.S_BUTTON_TEXT)
+
+                        button_x_text = width // 2 - text.get_width() // 2
+                        button_y_text = height - height // 12 - text.get_height() // 2
+
+                        screen.blit(text, (button_x_text, button_y_text))
+                    else:
+                        button_x = width // 2
+                        button_y = height - height // 12
+
+                        pygame.draw.rect(
+                            screen,
+                            style.S_BUTTON,
+                            (button_x - 100, button_y - 25, 200, 50),
+                            0,
+                            15,
+                        )
+
+                        font = pygame.font.SysFont("spendthrift", 40)
+                        text = font.render("Назад", True, style.S_BUTTON_TEXT)
+
+                        button_x_text = width // 2 - text.get_width() // 2
+                        button_y_text = height - height // 12 - text.get_height() // 2
+
+                        screen.blit(text, (button_x_text, button_y_text))
             board.render(screen)
             pygame.display.flip()
-
     def start_page(self, screen):
         width, height = self.screen_size
 
