@@ -943,12 +943,12 @@ class App(Game):
         button_x_1 = width // 2
         button_y_1 = height - height // 8
 
-        rect = pygame.Rect(button_x_1 - 100, button_y_1 - 25, 200, 50)
+        button_back = pygame.Rect(button_x_1 - 100, button_y_1 - 25, 200, 50)
 
         pygame.draw.rect(
             screen,
             style.S_BUTTON,
-            rect,
+            button_back,
             0,
             15,
         )
@@ -969,9 +969,30 @@ class App(Game):
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pos = event.pos
                     x, y = pos
-                    if rect.collidepoint(x, y):
+                    if button_back.collidepoint(x, y):
                         self.click_sound.play()
                         self.start_page(screen)
+                if event.type == pygame.MOUSEMOTION:
+                    pos = event.pos
+                    x, y = pos
+                    if button_back.collidepoint(x, y):
+                        pygame.draw.rect(
+                            screen,
+                            style.S_BUTTON_HOVER,
+                            button_back,
+                            0,
+                            15,
+                        )
+                        screen.blit(text, (button_x_text_1, button_y_text_1))
+                    else:
+                        pygame.draw.rect(
+                            screen,
+                            style.S_BUTTON,
+                            button_back,
+                            0,
+                            15,
+                        )
+                        screen.blit(text, (button_x_text_1, button_y_text_1))
             pygame.display.flip()
 
     @staticmethod
