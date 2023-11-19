@@ -104,7 +104,7 @@ class Board:
         screen.blit(text_rendered, (text_x, text_y))
 
 
-class Login:
+class Logic:
     def __init__(self, screen_size, settings):
         self.left = 50
         self.top = 150
@@ -189,7 +189,7 @@ class Login:
         self.board = [list(line) for line in zip(*self.board)]
 
 
-class Game(Board, Login):
+class Game(Board, Logic):
     def __init__(self, screen_size, settings):
         super().__init__(screen_size, settings)
 
