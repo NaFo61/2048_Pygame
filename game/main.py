@@ -4,8 +4,8 @@ import sys
 
 import pygame
 
-import style
 import funcs
+import style
 
 
 class Board:
@@ -14,6 +14,8 @@ class Board:
         self.top = 150
 
         self.screen_size = screen_size
+
+        self.points = 0
 
         self.level = settings.get("level")
         self.value = settings.get("value")
@@ -170,17 +172,41 @@ class LoginBoard(Board):
     def check_empty_cells(self):
         return not all(all(line) for line in self.board)
 
-    def fill_random_cells(self):
-        number = random.choice((2, 4))
+    def find_empty_cells(self):
         empty_cells = [
             (i, j)
             for i in range(self.value)
             for j in range(self.value)
             if self.board[i][j] == 0
         ]
+        return empty_cells
+    def fill_random_cells(self):
+        # Шансы на выпадение чисел
+        chances = {
+            "2": 90,  # Шанс на выпадение числа <2>
+            "4": 10,  # Шанс на выпадение числа <4>
+            "G": 25,  # Шанс на появление гема
+        }
+
+        # Проверка, что сумма шансов равна 100
+        chances_random_cells = list(chances.items())[:2]
+        if sum(map(lambda x: x[1], chances_random_cells)) != 100:
+            raise ValueError("Error: Chances do not add up to 100")
+
+        lst_with_chances = [
+            int(number) for number, chance in chances_random_cells for _ in range(chance)
+        ]
+
+        number = random.choice(lst_with_chances)
+
+        # Поиск пустых ячеек
+        empty_cells = self.find_empty_cells()
+
+        # Выбор случайной пустой ячейки для числа
         rd_empty_cell = random.choice(empty_cells)
         row, col = rd_empty_cell
         self.board[row][col] = number
+
 
     def move_left(self):
         self.board = [
@@ -257,7 +283,6 @@ class LoginBoard(Board):
 
 class Game(LoginBoard):
     def __init__(self, screen_size, settings):
-        self.points = 0
         super().__init__(screen_size, settings)
 
     def move(self, key):
@@ -365,7 +390,7 @@ class App(Game):
         button_y_1 = height // 2
 
         play_button_rect = pygame.Rect(
-            button_x_1 - 100, button_y_1 - 25, 200, 50
+            button_x_1 - 100, button_y_1 - 25, 200, 50,
         )
 
         pygame.draw.rect(
