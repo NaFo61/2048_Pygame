@@ -15,7 +15,7 @@ def get_color_cell(cell_value):
         512: style.CELL_COLOR_512,
         1024: style.CELL_COLOR_1024,
         2048: style.CELL_COLOR_2048,
-        "G": style.CELL_COLOR_G
+        "G": style.CELL_COLOR_G,
     }
     return settings.get(cell_value)
 

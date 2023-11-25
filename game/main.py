@@ -30,7 +30,7 @@ class Board:
         self.chances = {
             "2": 90,  # Шанс на выпадение числа <2>
             "4": 10,  # Шанс на выпадение числа <4>
-            "G": 25,  # Шанс на появление гема
+            "G": 5,  # Шанс на появление гема
         }
 
     def render(self, screen):
@@ -57,15 +57,12 @@ class Board:
         # <===== Надпись размер поля =====>
 
         # <===== Твои очки =====>
-        pygame.draw.rect(
-            screen, style.S_TABLE_SCORE, (250, 10, 100, 50), 0, 5
-        )
+        pygame.draw.rect(screen, style.S_TABLE_SCORE, (250, 10, 100, 50), 0, 5)
         pygame.draw.rect(
             screen, style.S_TABLE_SCORE_BORDER, (250, 10, 100, 50), 5, 5
         )
         font = pygame.font.SysFont("spendthrift", 20)
-        text = font.render("Счет", True, style.S_TABLE_SCORE_TEXT
-                           )
+        text = font.render("Счет", True, style.S_TABLE_SCORE_TEXT)
 
         button_x_text = 300 - text.get_width() // 2
         button_y_text = 25 - text.get_height() // 2
@@ -84,15 +81,12 @@ class Board:
         # <===== Твои очки =====>
 
         # <===== Лучшие очки =====>
-        pygame.draw.rect(
-            screen, style.S_TABLE_SCORE, (360, 10, 100, 50), 0, 5
-        )
+        pygame.draw.rect(screen, style.S_TABLE_SCORE, (360, 10, 100, 50), 0, 5)
         pygame.draw.rect(
             screen, style.S_TABLE_SCORE_BORDER, (360, 10, 100, 50), 5, 5
         )
         font = pygame.font.SysFont("spendthrift", 20)
-        text = font.render("Лучший", True, style.S_TABLE_SCORE_TEXT
-                           )
+        text = font.render("Лучший", True, style.S_TABLE_SCORE_TEXT)
 
         button_x_text = 410 - text.get_width() // 2
         button_y_text = 25 - text.get_height() // 2
@@ -154,23 +148,25 @@ class Board:
     def render_cell_text(self, screen, cell_value, i, j):
         """Отображение текста ячейки"""
 
-        color, font_size = funcs.get_color_fontsize_text(cell_value, self.level)
+        color, font_size = funcs.get_color_fontsize_text(
+            cell_value, self.level
+        )
         font = pygame.font.Font(None, font_size)
         text_rendered = font.render(str(cell_value), True, color)
 
         text_width, text_height = font.size(str(cell_value))
 
         text_x = (
-                self.left
-                + self.margin * (j + 1)
-                + j * self.cell_size
-                + (self.cell_size - text_width) // 2
+            self.left
+            + self.margin * (j + 1)
+            + j * self.cell_size
+            + (self.cell_size - text_width) // 2
         )
         text_y = (
-                self.top
-                + self.margin * (i + 1)
-                + i * self.cell_size
-                + (self.cell_size - text_height) // 2
+            self.top
+            + self.margin * (i + 1)
+            + i * self.cell_size
+            + (self.cell_size - text_height) // 2
         )
 
         screen.blit(text_rendered, (text_x, text_y))
@@ -217,7 +213,9 @@ class LoginBoard(Board):
             raise ValueError("Error: Chances do not add up to 100")
         self.spawn_number()
 
-        is_spawn_g = random.randint(1, 100) in range(1, self.chances.get("G") + 1)
+        is_spawn_g = random.randint(1, 100) in range(
+            1, self.chances.get("G") + 1
+        )
         if is_spawn_g:
             self.spawn_gem()
 
@@ -227,7 +225,7 @@ class LoginBoard(Board):
             inds_g = [i for i, v in enumerate(line) if v == "G"]
             for ind_g in inds_g:
                 if ind_g != len(line) - 1:
-                    if [i for i in line[ind_g + 1:] if i and i != "G"]:
+                    if [i for i in line[ind_g + 1 :] if i and i != "G"]:
                         line[ind_g] = 0
                         self.collected_g += 1
             new_line = [i for i in line if i] + [0] * line.count(0)
@@ -237,8 +235,8 @@ class LoginBoard(Board):
         for i in range(self.value):
             for j in range(self.value - 1):
                 if (
-                        self.board[i][j] == self.board[i][j + 1]
-                        and self.board[i][j + 1] != 0
+                    self.board[i][j] == self.board[i][j + 1]
+                    and self.board[i][j + 1] != 0
                 ):
                     if self.board[i][j] != "G":
                         result_of_cell = self.board[i][j] * 2
@@ -250,25 +248,34 @@ class LoginBoard(Board):
                         result_of_cell = "G"
                         self.board[i][j] = result_of_cell
 
-
     def move_right(self):
-        self.board = [
-            [0] * line.count(0) + [i for i in line if i] for line in self.board
-        ]
+        board = []
+        for line in self.board:
+            inds_g = [i for i, v in enumerate(line) if v == "G"]
+            for ind_g in inds_g:
+                if True:
+                    if [i for i in line[:ind_g] if i and i != "G"]:
+                        line[ind_g] = 0
+                        self.collected_g += 1
+            new_line = [0] * line.count(0) + [i for i in line if i]
+            board.append(new_line)
+        self.board = board
+
         for i in range(self.value):
             for j in range(self.value - 1, 0, -1):
                 if (
-                        self.board[i][j] == self.board[i][j - 1]
-                        and self.board[i][j] != 0
+                    self.board[i][j] == self.board[i][j - 1]
+                    and self.board[i][j] != 0
                 ):
                     if self.board[i][j] != "G":
                         result_of_cell = self.board[i][j] * 2
+                        self.board[i][j] = result_of_cell
+                        self.board[i].pop(j - 1)
+                        self.board[i].insert(0, 0)
                         self.points += result_of_cell
                     else:
                         result_of_cell = "G"
-                    self.board[i][j] = result_of_cell
-                    self.board[i].pop(j - 1)
-                    self.board[i].insert(0, 0)
+                        self.board[i][j] = result_of_cell
 
     def move_up(self):
         self.board = [list(line) for line in zip(*self.board)]
@@ -277,7 +284,7 @@ class LoginBoard(Board):
             inds_g = [i for i, v in enumerate(line) if v == "G"]
             for ind_g in inds_g:
                 if ind_g != len(line) - 1:
-                    if [i for i in line[ind_g + 1:] if i and i != "G"]:
+                    if [i for i in line[ind_g + 1 :] if i and i != "G"]:
                         line[ind_g] = 0
                         self.collected_g += 1
             new_line = [i for i in line if i] + [0] * line.count(0)
@@ -286,8 +293,8 @@ class LoginBoard(Board):
         for i in range(self.value):
             for j in range(self.value - 1):
                 if (
-                        self.board[i][j] == self.board[i][j + 1]
-                        and self.board[i][j + 1] != 0
+                    self.board[i][j] == self.board[i][j + 1]
+                    and self.board[i][j + 1] != 0
                 ):
                     if self.board[i][j] != "G":
                         result_of_cell = self.board[i][j] * 2
@@ -302,23 +309,32 @@ class LoginBoard(Board):
 
     def move_down(self):
         self.board = [list(line) for line in zip(*self.board)]
-        self.board = [
-            [0] * line.count(0) + [i for i in line if i] for line in self.board
-        ]
+        board = []
+        for line in self.board:
+            inds_g = [i for i, v in enumerate(line) if v == "G"]
+            for ind_g in inds_g:
+                if True:
+                    if [i for i in line[:ind_g] if i and i != "G"]:
+                        line[ind_g] = 0
+                        self.collected_g += 1
+            new_line = [0] * line.count(0) + [i for i in line if i]
+            board.append(new_line)
+        self.board = board
         for i in range(self.value):
             for j in range(self.value - 1, 0, -1):
                 if (
-                        self.board[i][j] == self.board[i][j - 1]
-                        and self.board[i][j] != 0
+                    self.board[i][j] == self.board[i][j - 1]
+                    and self.board[i][j] != 0
                 ):
                     if self.board[i][j] != "G":
                         result_of_cell = self.board[i][j] * 2
+                        self.board[i][j] = result_of_cell
+                        self.board[i].pop(j - 1)
+                        self.board[i].insert(0, 0)
                         self.points += result_of_cell
                     else:
                         result_of_cell = "G"
-                    self.board[i][j] = result_of_cell
-                    self.board[i].pop(j - 1)
-                    self.board[i].insert(0, 0)
+                        self.board[i][j] = result_of_cell
         self.board = [list(line) for line in zip(*self.board)]
 
 
@@ -375,10 +391,10 @@ class App(Game):
                     self.terminate()
                 if event.type == pygame.KEYDOWN:
                     if event.key in (
-                            pygame.K_LEFT,
-                            pygame.K_RIGHT,
-                            pygame.K_UP,
-                            pygame.K_DOWN,
+                        pygame.K_LEFT,
+                        pygame.K_RIGHT,
+                        pygame.K_UP,
+                        pygame.K_DOWN,
                     ):
                         random.choice(self.move_sounds).play()
                         board.move(event.key)
@@ -398,7 +414,9 @@ class App(Game):
                     text = font.render("Назад", True, style.S_BUTTON_TEXT)
 
                     button_x_text = width // 2 - text.get_width() // 2
-                    button_y_text = height - height // 12 - text.get_height() // 2
+                    button_y_text = (
+                        height - height // 12 - text.get_height() // 2
+                    )
 
                     if 250 - 100 < x < 250 + 100 and 596 - 25 < y < 596 + 25:
                         pygame.draw.rect(
@@ -431,7 +449,10 @@ class App(Game):
         button_y_1 = height // 2
 
         play_button_rect = pygame.Rect(
-            button_x_1 - 100, button_y_1 - 25, 200, 50,
+            button_x_1 - 100,
+            button_y_1 - 25,
+            200,
+            50,
         )
 
         pygame.draw.rect(
@@ -548,7 +569,9 @@ class App(Game):
                             0,
                             15,
                         )
-                        screen.blit(text_play, (button_x_text_1, button_y_text_1))
+                        screen.blit(
+                            text_play, (button_x_text_1, button_y_text_1)
+                        )
                     else:
                         pygame.draw.rect(
                             screen,
@@ -557,7 +580,9 @@ class App(Game):
                             0,
                             15,
                         )
-                        screen.blit(text_play, (button_x_text_1, button_y_text_1))
+                        screen.blit(
+                            text_play, (button_x_text_1, button_y_text_1)
+                        )
 
                     if records_button_rect.collidepoint(x, y):
                         pygame.draw.rect(
@@ -567,7 +592,9 @@ class App(Game):
                             0,
                             15,
                         )
-                        screen.blit(text_records, (button_x_text_2, button_y_text_2))
+                        screen.blit(
+                            text_records, (button_x_text_2, button_y_text_2)
+                        )
                     else:
                         pygame.draw.rect(
                             screen,
@@ -576,7 +603,9 @@ class App(Game):
                             0,
                             15,
                         )
-                        screen.blit(text_records, (button_x_text_2, button_y_text_2))
+                        screen.blit(
+                            text_records, (button_x_text_2, button_y_text_2)
+                        )
 
                     if rules_button_rect.collidepoint(x, y):
                         pygame.draw.rect(
@@ -586,7 +615,9 @@ class App(Game):
                             0,
                             15,
                         )
-                        screen.blit(text_rules, (button_x_text_3, button_y_text_3))
+                        screen.blit(
+                            text_rules, (button_x_text_3, button_y_text_3)
+                        )
                     else:
                         pygame.draw.rect(
                             screen,
@@ -595,7 +626,9 @@ class App(Game):
                             0,
                             15,
                         )
-                        screen.blit(text_rules, (button_x_text_3, button_y_text_3))
+                        screen.blit(
+                            text_rules, (button_x_text_3, button_y_text_3)
+                        )
 
             pygame.display.flip()
 
@@ -615,7 +648,9 @@ class App(Game):
 
         # <==== Надпись ====>
         font_title = pygame.font.SysFont("spendthrift", 60)
-        text_title = font_title.render("Выбери размер поля", True, style.S_MAIN_TITLE)
+        text_title = font_title.render(
+            "Выбери размер поля", True, style.S_MAIN_TITLE
+        )
 
         text_x = width // 2 - text_title.get_width() // 2
         text_y = height // 8 - text_title.get_height() // 2
@@ -748,7 +783,9 @@ class App(Game):
                             0,
                             15,
                         )
-                        screen.blit(text_4_x_4, (button_x_text_1, button_y_text_1))
+                        screen.blit(
+                            text_4_x_4, (button_x_text_1, button_y_text_1)
+                        )
                     else:
                         pygame.draw.rect(
                             screen,
@@ -757,7 +794,9 @@ class App(Game):
                             0,
                             15,
                         )
-                        screen.blit(text_4_x_4, (button_x_text_1, button_y_text_1))
+                        screen.blit(
+                            text_4_x_4, (button_x_text_1, button_y_text_1)
+                        )
 
                     if button_6_x_6.collidepoint(x, y):
                         pygame.draw.rect(
@@ -767,7 +806,9 @@ class App(Game):
                             0,
                             15,
                         )
-                        screen.blit(text_6_x_6, (button_x_text_2, button_y_text_2))
+                        screen.blit(
+                            text_6_x_6, (button_x_text_2, button_y_text_2)
+                        )
                     else:
                         pygame.draw.rect(
                             screen,
@@ -776,7 +817,9 @@ class App(Game):
                             0,
                             15,
                         )
-                        screen.blit(text_6_x_6, (button_x_text_2, button_y_text_2))
+                        screen.blit(
+                            text_6_x_6, (button_x_text_2, button_y_text_2)
+                        )
 
                     if button_8_x_8.collidepoint(x, y):
                         pygame.draw.rect(
@@ -786,7 +829,9 @@ class App(Game):
                             0,
                             15,
                         )
-                        screen.blit(text_8_x_8, (button_x_text_3, button_y_text_3))
+                        screen.blit(
+                            text_8_x_8, (button_x_text_3, button_y_text_3)
+                        )
                     else:
                         pygame.draw.rect(
                             screen,
@@ -795,7 +840,9 @@ class App(Game):
                             0,
                             15,
                         )
-                        screen.blit(text_8_x_8, (button_x_text_3, button_y_text_3))
+                        screen.blit(
+                            text_8_x_8, (button_x_text_3, button_y_text_3)
+                        )
                     if button_back.collidepoint(x, y):
                         pygame.draw.rect(
                             screen,
@@ -805,7 +852,9 @@ class App(Game):
                             15,
                         )
 
-                        screen.blit(text_back, (button_back_x_text, button_back_y_text))
+                        screen.blit(
+                            text_back, (button_back_x_text, button_back_y_text)
+                        )
                     else:
                         pygame.draw.rect(
                             screen,
@@ -814,7 +863,9 @@ class App(Game):
                             0,
                             15,
                         )
-                        screen.blit(text_back, (button_back_x_text, button_back_y_text))
+                        screen.blit(
+                            text_back, (button_back_x_text, button_back_y_text)
+                        )
 
             pygame.display.flip()
 
