@@ -272,9 +272,17 @@ class LoginBoard(Board):
 
     def move_up(self):
         self.board = [list(line) for line in zip(*self.board)]
-        self.board = [
-            [i for i in line if i] + [0] * line.count(0) for line in self.board
-        ]
+        board = []
+        for line in self.board:
+            inds_g = [i for i, v in enumerate(line) if v == "G"]
+            for ind_g in inds_g:
+                if ind_g != len(line) - 1:
+                    if [i for i in line[ind_g + 1:] if i and i != "G"]:
+                        line[ind_g] = 0
+                        self.collected_g += 1
+            new_line = [i for i in line if i] + [0] * line.count(0)
+            board.append(new_line)
+        self.board = board
         for i in range(self.value):
             for j in range(self.value - 1):
                 if (
@@ -283,12 +291,13 @@ class LoginBoard(Board):
                 ):
                     if self.board[i][j] != "G":
                         result_of_cell = self.board[i][j] * 2
+                        self.board[i][j] = result_of_cell
+                        self.board[i].pop(j + 1)
+                        self.board[i].append(0)
                         self.points += result_of_cell
                     else:
                         result_of_cell = "G"
-                    self.board[i][j] = result_of_cell
-                    self.board[i].pop(j + 1)
-                    self.board[i].append(0)
+                        self.board[i][j] = result_of_cell
         self.board = [list(line) for line in zip(*self.board)]
 
     def move_down(self):
