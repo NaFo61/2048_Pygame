@@ -3,67 +3,72 @@ import style
 
 def get_color_cell(cell_value):
     settings = {
-        0: style.COLOR_0,
-        2: style.COLOR_2,
-        4: style.COLOR_4,
-        8: style.COLOR_8,
-        16: style.COLOR_16,
-        32: style.COLOR_32,
-        64: style.COLOR_64,
-        128: style.COLOR_128,
-        256: style.COLOR_256,
-        512: style.COLOR_512,
-        1024: style.COLOR_1024,
-        2048: style.COLOR_2048,
+        0: style.CELL_COLOR_0,
+        2: style.CELL_COLOR_2,
+        4: style.CELL_COLOR_4,
+        8: style.CELL_COLOR_8,
+        16: style.CELL_COLOR_16,
+        32: style.CELL_COLOR_32,
+        64: style.CELL_COLOR_64,
+        128: style.CELL_COLOR_128,
+        256: style.CELL_COLOR_256,
+        512: style.CELL_COLOR_512,
+        1024: style.CELL_COLOR_1024,
+        2048: style.CELL_COLOR_2048,
+        "G": style.CELL_COLOR_G
     }
     return settings.get(cell_value)
 
 
-def get_color_fonsize_text(cell_value, level):
+def get_color_fontsize_text(cell_value, level):
     match cell_value:
         case 2:
-            return (121, 112, 99), (
+            return style.TEXT_COLOR_2, (
                 80 if level == 1 else 60 if level == 2 else 40
             )
         case 4:
-            return (121, 112, 99), (
+            return style.TEXT_COLOR_4, (
                 80 if level == 1 else 60 if level == 2 else 40
             )
         case 8:
-            return (255, 245, 224), (
-                80 if level == 1 else 60 if level == 2 else 40
+            return style.TEXT_COLOR_8, (
+                80 if level == 1 else 60 if level == 2 else 60
             )
         case 16:
-            return (255, 245, 224), (
+            return style.TEXT_COLOR_16, (
                 75 if level == 1 else 60 if level == 2 else 40
             )
         case 32:
-            return (255, 245, 224), (
+            return style.TEXT_COLOR_32, (
                 75 if level == 1 else 60 if level == 2 else 40
             )
         case 64:
-            return (255, 245, 224), (
+            return style.TEXT_COLOR_64, (
                 75 if level == 1 else 60 if level == 2 else 40
             )
         case 128:
-            return (255, 245, 224), (
+            return style.TEXT_COLOR_128, (
                 65 if level == 1 else 45 if level == 2 else 35
             )
         case 256:
-            return (255, 245, 224), (
+            return style.TEXT_COLOR_256, (
                 65 if level == 1 else 45 if level == 2 else 35
             )
         case 512:
-            return (255, 245, 224), (
+            return style.TEXT_COLOR_512, (
                 65 if level == 1 else 45 if level == 2 else 35
             )
         case 1024:
-            return (255, 245, 224), (
+            return style.TEXT_COLOR_1024, (
                 55 if level == 1 else 35 if level == 2 else 25
             )
         case 2048:
-            return (255, 245, 224), (
+            return style.TEXT_COLOR_2048, (
                 55 if level == 1 else 35 if level == 2 else 25
+            )
+        case "G":
+            return style.TEXT_COLOR_G, (
+                80 if level == 1 else 60 if level == 2 else 60
             )
 
 

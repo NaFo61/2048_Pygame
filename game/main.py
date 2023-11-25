@@ -24,6 +24,14 @@ class Board:
         self.board = [
             [0 for _ in range(self.value)] for _ in range(self.value)
         ]
+        self.collected_g = 0
+
+        # Шансы на выпадение чисел
+        self.chances = {
+            "2": 90,  # Шанс на выпадение числа <2>
+            "4": 10,  # Шанс на выпадение числа <4>
+            "G": 25,  # Шанс на появление гема
+        }
 
     def render(self, screen):
         """Метод, который отображает все поле"""
@@ -146,7 +154,7 @@ class Board:
     def render_cell_text(self, screen, cell_value, i, j):
         """Отображение текста ячейки"""
 
-        color, font_size = funcs.get_color_fonsize_text(cell_value, self.level)
+        color, font_size = funcs.get_color_fontsize_text(cell_value, self.level)
         font = pygame.font.Font(None, font_size)
         text_rendered = font.render(str(cell_value), True, color)
 
@@ -180,50 +188,68 @@ class LoginBoard(Board):
             if self.board[i][j] == 0
         ]
         return empty_cells
-    def fill_random_cells(self):
-        # Шансы на выпадение чисел
-        chances = {
-            "2": 90,  # Шанс на выпадение числа <2>
-            "4": 10,  # Шанс на выпадение числа <4>
-            "G": 25,  # Шанс на появление гема
-        }
 
-        # Проверка, что сумма шансов равна 100
-        chances_random_cells = list(chances.items())[:2]
-        if sum(map(lambda x: x[1], chances_random_cells)) != 100:
-            raise ValueError("Error: Chances do not add up to 100")
-
+    def spawn_number(self):
+        chances = list(self.chances.items())[:2]
         lst_with_chances = [
-            int(number) for number, chance in chances_random_cells for _ in range(chance)
+            int(number) for number, chance in chances for _ in range(chance)
         ]
-
         number = random.choice(lst_with_chances)
-
         # Поиск пустых ячеек
         empty_cells = self.find_empty_cells()
-
         # Выбор случайной пустой ячейки для числа
         rd_empty_cell = random.choice(empty_cells)
         row, col = rd_empty_cell
         self.board[row][col] = number
 
+    def spawn_gem(self):
+        # Поиск пустых ячеек
+        empty_cells = self.find_empty_cells()
+        # Выбор случайной пустой ячейки для числа
+        rd_empty_cell = random.choice(empty_cells)
+        row, col = rd_empty_cell
+        self.board[row][col] = "G"
+
+    def fill_random_cells(self):
+        # Проверка, что сумма шансов равна 100
+        chances_random_cells = list(self.chances.items())[:2]
+        if sum(list(self.chances.values())[:2]) != 100:
+            raise ValueError("Error: Chances do not add up to 100")
+        self.spawn_number()
+
+        is_spawn_g = random.randint(1, 100) in range(1, self.chances.get("G") + 1)
+        if is_spawn_g:
+            self.spawn_gem()
 
     def move_left(self):
-        self.board = [
-            [i for i in line if i] + [0] * line.count(0) for line in self.board
-        ]
+        board = []
+        for line in self.board:
+            inds_g = [i for i, v in enumerate(line) if v == "G"]
+            for ind_g in inds_g:
+                if ind_g != len(line) - 1:
+                    if [i for i in line[ind_g + 1:] if i and i != "G"]:
+                        line[ind_g] = 0
+                        self.collected_g += 1
+            new_line = [i for i in line if i] + [0] * line.count(0)
+            board.append(new_line)
+        self.board = board
+
         for i in range(self.value):
             for j in range(self.value - 1):
                 if (
                         self.board[i][j] == self.board[i][j + 1]
                         and self.board[i][j + 1] != 0
                 ):
-                    result_of_cell = self.board[i][j] * 2
-                    self.board[i][j] = result_of_cell
-                    self.board[i].pop(j + 1)
-                    self.board[i].append(0)
+                    if self.board[i][j] != "G":
+                        result_of_cell = self.board[i][j] * 2
+                        self.board[i][j] = result_of_cell
+                        self.board[i].pop(j + 1)
+                        self.board[i].append(0)
+                        self.points += result_of_cell
+                    else:
+                        result_of_cell = "G"
+                        self.board[i][j] = result_of_cell
 
-                    self.points += result_of_cell
 
     def move_right(self):
         self.board = [
@@ -235,12 +261,14 @@ class LoginBoard(Board):
                         self.board[i][j] == self.board[i][j - 1]
                         and self.board[i][j] != 0
                 ):
-                    result_of_cell = self.board[i][j] * 2
+                    if self.board[i][j] != "G":
+                        result_of_cell = self.board[i][j] * 2
+                        self.points += result_of_cell
+                    else:
+                        result_of_cell = "G"
                     self.board[i][j] = result_of_cell
                     self.board[i].pop(j - 1)
                     self.board[i].insert(0, 0)
-
-                    self.points += result_of_cell
 
     def move_up(self):
         self.board = [list(line) for line in zip(*self.board)]
@@ -253,12 +281,14 @@ class LoginBoard(Board):
                         self.board[i][j] == self.board[i][j + 1]
                         and self.board[i][j + 1] != 0
                 ):
-                    result_of_cell = self.board[i][j] * 2
+                    if self.board[i][j] != "G":
+                        result_of_cell = self.board[i][j] * 2
+                        self.points += result_of_cell
+                    else:
+                        result_of_cell = "G"
                     self.board[i][j] = result_of_cell
                     self.board[i].pop(j + 1)
                     self.board[i].append(0)
-
-                    self.points += result_of_cell
         self.board = [list(line) for line in zip(*self.board)]
 
     def move_down(self):
@@ -272,12 +302,14 @@ class LoginBoard(Board):
                         self.board[i][j] == self.board[i][j - 1]
                         and self.board[i][j] != 0
                 ):
-                    result_of_cell = self.board[i][j] * 2
+                    if self.board[i][j] != "G":
+                        result_of_cell = self.board[i][j] * 2
+                        self.points += result_of_cell
+                    else:
+                        result_of_cell = "G"
                     self.board[i][j] = result_of_cell
                     self.board[i].pop(j - 1)
                     self.board[i].insert(0, 0)
-
-                    self.points += result_of_cell
         self.board = [list(line) for line in zip(*self.board)]
 
 
