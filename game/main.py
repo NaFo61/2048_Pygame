@@ -24,13 +24,13 @@ class Board:
         self.board = [
             [0 for _ in range(self.value)] for _ in range(self.value)
         ]
-        self.collected_g = 0
+        self.collected_g = 9
 
         # Шансы на выпадение чисел
         self.chances = {
             "2": 90,  # Шанс на выпадение числа <2>
             "4": 10,  # Шанс на выпадение числа <4>
-            "G": 5,  # Шанс на появление гема
+            "G": 100,  # Шанс на появление гема
         }
 
     def render(self, screen):
@@ -45,16 +45,51 @@ class Board:
         width, height = self.screen_size
 
         # <===== Надпись размер поля =====>
-        font = pygame.font.SysFont("spendthrift", 70)
+        font = pygame.font.SysFont("spendthrift", 35)
         text = font.render(
             f"{self.value} x {self.value}", True, style.S_BUTTON_TEXT
         )
 
         button_x_text = width // 2 - text.get_width() // 2
-        button_y_text = 120 - text.get_height() // 2
+        button_y_text = 130 - text.get_height() // 2
 
         screen.blit(text, (button_x_text, button_y_text))
         # <===== Надпись размер поля =====>
+
+        # <===== Твой баланс =====>
+        pygame.draw.rect(screen, style.S_TABLE_SCORE, (40, 10, 150, 80), 0, 5)
+        pygame.draw.rect(
+            screen, style.S_TABLE_SCORE_BORDER, (40, 10, 150, 80), 5, 5
+        )
+        font = pygame.font.SysFont("spendthrift", 30)
+        text = font.render("Баланс", True, style.S_TABLE_SCORE_TEXT)
+
+        button_x_text = 115 - text.get_width() // 2
+        button_y_text = 30 - text.get_height() // 2
+
+        screen.blit(text, (button_x_text, button_y_text))
+
+        font = pygame.font.SysFont("spendthrift", 30)
+        col_text = font.render(
+            f"{self.collected_g}", True, style.S_TABLE_SCORE_TEXT_VALUE
+        )
+
+        button_x_text = 115 - col_text.get_width() // 2
+        button_y_text = 60 - col_text.get_height() // 2
+
+        screen.blit(col_text, (button_x_text, button_y_text))
+
+        # Дальше G
+        font = pygame.font.SysFont("spendthrift", 30)
+        g_text = font.render(
+            "G", True, style.S_TABLE_SCORE_TEXT_VALUE_G
+        )
+
+        button_x_text = 115 + col_text.get_width() - len(str(self.collected_g)) * 4
+        button_y_text = 60 - g_text.get_height() // 2
+
+        screen.blit(g_text, (button_x_text, button_y_text))
+        # <===== Твой баланс =====>
 
         # <===== Твои очки =====>
         pygame.draw.rect(screen, style.S_TABLE_SCORE, (250, 10, 100, 50), 0, 5)
