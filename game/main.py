@@ -466,8 +466,8 @@ class App(Game):
         ):
             return None
         return (
-            (y - top) // cell_size,
-            (x - left) // cell_size,
+            (y - top) // (cell_size + margin),
+            (x - left) // (cell_size + margin),
         )
 
     def get_click(self, x, y):
@@ -487,7 +487,6 @@ class App(Game):
         screen.fill(style.BACKGROUND_COLOR)
         board = Game(self.screen_size, self.settings)
         board.render_decoration(screen, True)
-
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -550,18 +549,27 @@ class App(Game):
                         )
                         screen.blit(text, (button_x_text, button_y_text))
                     if 90 < x < 140 and 75 < y < 125:
+                        ulta_delete = pygame.draw.rect(
+                            screen, style.S_TABLE_SCORE, (90, 75, 50, 50), 0, 5
+                        )
+                        pygame.draw.rect(
+                            screen, style.S_TABLE_SCORE_BORDER, (90, 75, 50, 50), 5, 5
+                        )
+
+                        image = pygame.transform.scale(
+                            load.load_image("ulta_delete_click.png", (255, 255, 255)),
+                            (40, 40),
+                        )
+
+                        screen.blit(image, (ulta_delete.x + 5, ulta_delete.y + 5))
+
+
+
                         pygame.draw.rect(
                             screen,
                             style.S_TABLE_SCORE,
                             (90, 125, 50, 20),
                             0,
-                            5,
-                        )
-                        pygame.draw.rect(
-                            screen,
-                            style.S_TABLE_SCORE_BORDER,
-                            (90, 75, 50, 50),
-                            5,
                             5,
                         )
                         font = pygame.font.SysFont("spendthrift", 25)
@@ -574,6 +582,20 @@ class App(Game):
 
                         screen.blit(text, (button_x_text, button_y_text))
                     else:
+                        ulta_delete = pygame.draw.rect(
+                            screen, style.S_TABLE_SCORE, (90, 75, 50, 50), 0, 5
+                        )
+                        pygame.draw.rect(
+                            screen, style.S_TABLE_SCORE_BORDER, (90, 75, 50, 50), 5, 5
+                        )
+
+                        image = pygame.transform.scale(
+                            load.load_image("ulta_delete.png", (255, 255, 255)),
+                            (40, 40),
+                        )
+
+                        screen.blit(image, (ulta_delete.x + 5, ulta_delete.y + 5))
+
                         pygame.draw.rect(
                             screen,
                             style.BACKGROUND_COLOR,
@@ -582,9 +604,9 @@ class App(Game):
                             5,
                         )
 
+
             board.render(screen)
             pygame.display.flip()
-
     def start_page(self, screen):
         width, height = self.screen_size
 
