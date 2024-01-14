@@ -5,6 +5,7 @@ import sys
 import pygame
 
 import funcs
+import load
 import style
 
 
@@ -24,14 +25,29 @@ class Board:
         self.board = [
             [0 for _ in range(self.value)] for _ in range(self.value)
         ]
-        self.collected_g = 9
+        self.collected_g = 0
 
         # Шансы на выпадение чисел
         self.chances = {
             "2": 90,  # Шанс на выпадение числа <2>
             "4": 10,  # Шанс на выпадение числа <4>
-            "G": 100,  # Шанс на появление гема
+            "G": 25,  # Шанс на появление гема
         }
+
+        self.ulta_delete_active = False
+
+    def get_board(self):
+        print("x", self.board)
+
+    def check_valid_cell(self, cell):
+        i, j = cell
+        print(self.board, cell)
+        return True if self.board[i][j] != 0 else False
+
+    def check_money_for_ulta(self, need_money):
+        collected_g = self.collected_g
+        return collected_g >= need_money
+
 
     def render(self, screen):
         """Метод, который отображает все поле"""
@@ -57,15 +73,15 @@ class Board:
         # <===== Надпись размер поля =====>
 
         # <===== Твой баланс =====>
-        pygame.draw.rect(screen, style.S_TABLE_SCORE, (40, 10, 150, 80), 0, 5)
+        pygame.draw.rect(screen, style.S_TABLE_SCORE, (40, 10, 150, 60), 0, 5)
         pygame.draw.rect(
-            screen, style.S_TABLE_SCORE_BORDER, (40, 10, 150, 80), 5, 5
+            screen, style.S_TABLE_SCORE_BORDER, (40, 10, 150, 60), 5, 5
         )
         font = pygame.font.SysFont("spendthrift", 30)
         text = font.render("Баланс", True, style.S_TABLE_SCORE_TEXT)
 
         button_x_text = 115 - text.get_width() // 2
-        button_y_text = 30 - text.get_height() // 2
+        button_y_text = 28 - text.get_height() // 2
 
         screen.blit(text, (button_x_text, button_y_text))
 
@@ -75,21 +91,38 @@ class Board:
         )
 
         button_x_text = 115 - col_text.get_width() // 2
-        button_y_text = 60 - col_text.get_height() // 2
+        button_y_text = 48 - col_text.get_height() // 2
 
         screen.blit(col_text, (button_x_text, button_y_text))
 
         # Дальше G
         font = pygame.font.SysFont("spendthrift", 30)
-        g_text = font.render(
-            "G", True, style.S_TABLE_SCORE_TEXT_VALUE_G
-        )
+        g_text = font.render("G", True, style.S_TABLE_SCORE_TEXT_VALUE_G)
 
-        button_x_text = 115 + col_text.get_width() - len(str(self.collected_g)) * 4
-        button_y_text = 60 - g_text.get_height() // 2
+        button_x_text = (
+            115 + col_text.get_width() - len(str(self.collected_g)) * 4
+        )
+        button_y_text = 48 - g_text.get_height() // 2
 
         screen.blit(g_text, (button_x_text, button_y_text))
         # <===== Твой баланс =====>
+
+        # <===== Ульта удаление =====>
+        ulta_delete = pygame.draw.rect(
+            screen, style.S_TABLE_SCORE, (90, 75, 50, 50), 0, 5
+        )
+        pygame.draw.rect(
+            screen, style.S_TABLE_SCORE_BORDER, (90, 75, 50, 50), 5, 5
+        )
+
+        image = pygame.transform.scale(
+            load.load_image("ulta_delete.png", (255, 255, 255)),
+            (40, 40),
+        )
+
+        screen.blit(image, (ulta_delete.x + 5, ulta_delete.y + 5))
+
+        # <===== Ульта удаление =====>
 
         # <===== Твои очки =====>
         pygame.draw.rect(screen, style.S_TABLE_SCORE, (250, 10, 100, 50), 0, 5)
@@ -133,7 +166,7 @@ class Board:
         pygame.draw.rect(
             screen, style.RECT, (self.left, self.top, 400, 400), 0, 15
         )
-        # Прямоугольник для клеточек
+
         if draw_back_button:
             # <==== Назад ====>
             button_x = width // 2
@@ -207,7 +240,18 @@ class Board:
         screen.blit(text_rendered, (text_x, text_y))
 
 
-class LoginBoard(Board):
+class LogicBoard(Board):
+    def __init__(self, screen_size, settings):
+        super().__init__(screen_size, settings)
+
+    def delete_cell(self, cell):
+        if cell is not None:
+            i, j = cell
+            self.board[i][j] = 0
+
+    def buy_ulta(self, need_money):
+        self.collected_g -= need_money
+
     def check_empty_cells(self):
         return not all(all(line) for line in self.board)
 
@@ -243,7 +287,6 @@ class LoginBoard(Board):
 
     def fill_random_cells(self):
         # Проверка, что сумма шансов равна 100
-        chances_random_cells = list(self.chances.items())[:2]
         if sum(list(self.chances.values())[:2]) != 100:
             raise ValueError("Error: Chances do not add up to 100")
         self.spawn_number()
@@ -373,7 +416,7 @@ class LoginBoard(Board):
         self.board = [list(line) for line in zip(*self.board)]
 
 
-class Game(LoginBoard):
+class Game(LogicBoard):
     def __init__(self, screen_size, settings):
         super().__init__(screen_size, settings)
 
@@ -394,7 +437,7 @@ class Game(LoginBoard):
 
 class App(Game):
     def __init__(self, screen):
-        screen = screen
+        self.screen = screen
         self.screen_size = screen.get_size()
         self.level = 1
         self.settings = funcs.generate_settings(self.level)
@@ -407,13 +450,38 @@ class App(Game):
 
         self.start_page(screen)
 
-        super().__init__(self.screen_size, self.settings)
+    def get_cell(self, x, y):
+        print(self.settings)
+        """Определение ячейки по координатам клика"""
+        left = self.settings.get("left")
+        top = self.settings.get("top")
+        cell_size = self.settings.get("cell_size")
+        margin = self.settings.get("margin")
+        value = self.settings.get("value")
+        if (
+            x < left
+            or x > left + cell_size * value + margin * (value + 1)
+            or y < top
+            or y > top + cell_size * value + margin * (value + 1)
+        ):
+            return None
+        return (
+            (y - top) // cell_size,
+            (x - left) // cell_size,
+        )
+
+    def get_click(self, x, y):
+        """Определение клика"""
+        cell = self.get_cell(x, y)
+        return cell
 
     def update_settings(self, level):
         self.level = level
         self.settings = funcs.generate_settings(level)
 
     def game_page(self, screen):
+        super().__init__(self.screen_size, self.settings)
+
         width, height = self.screen_size
 
         screen.fill(style.BACKGROUND_COLOR)
@@ -439,6 +507,17 @@ class App(Game):
                     if 250 - 100 < x < 250 + 100 and 596 - 25 < y < 596 + 25:
                         self.click_sound.play()
                         self.choice_page(screen)
+                    if 90 < x < 140 and 75 < y < 125:
+                        self.ulta_delete_active = True
+                    elif self.ulta_delete_active:
+                        cell = self.get_click(x, y)
+                        if board.check_valid_cell(cell):
+                            need_money = 10
+                            if board.check_money_for_ulta(need_money):
+                                board.buy_ulta(10)
+                                self.ulta_delete_active = False
+                                board.delete_cell(cell)
+
                 if event.type == pygame.MOUSEMOTION:
                     pos = event.pos
                     x, y = pos
@@ -452,8 +531,7 @@ class App(Game):
                     button_y_text = (
                         height - height // 12 - text.get_height() // 2
                     )
-
-                    if 250 - 100 < x < 250 + 100 and 596 - 25 < y < 596 + 25:
+                    if 150 < x < 350 and 571 < y < 621:
                         pygame.draw.rect(
                             screen,
                             style.S_BUTTON_HOVER,
@@ -471,6 +549,39 @@ class App(Game):
                             15,
                         )
                         screen.blit(text, (button_x_text, button_y_text))
+                    if 90 < x < 140 and 75 < y < 125:
+                        pygame.draw.rect(
+                            screen,
+                            style.S_TABLE_SCORE,
+                            (90, 125, 50, 20),
+                            0,
+                            5,
+                        )
+                        pygame.draw.rect(
+                            screen,
+                            style.S_TABLE_SCORE_BORDER,
+                            (90, 75, 50, 50),
+                            5,
+                            5,
+                        )
+                        font = pygame.font.SysFont("spendthrift", 25)
+                        text = font.render(
+                            "10", True, style.S_TABLE_SCORE_TEXT
+                        )
+
+                        button_x_text = 115 - text.get_width() // 2
+                        button_y_text = 135 - text.get_height() // 2
+
+                        screen.blit(text, (button_x_text, button_y_text))
+                    else:
+                        pygame.draw.rect(
+                            screen,
+                            style.BACKGROUND_COLOR,
+                            (90, 125, 50, 20),
+                            0,
+                            5,
+                        )
+
             board.render(screen)
             pygame.display.flip()
 

@@ -80,18 +80,24 @@ def generate_settings(level):
             "value": 4,
             "cell_size": 90,
             "margin": 8,
+            "left": 50,
+            "top": 150,
         },
         2: {
             "level": 2,
             "value": 6,
             "cell_size": 57.33,
             "margin": 8,
+            "left": 50,
+            "top": 150,
         },
         3: {
             "level": 3,
             "value": 8,
             "cell_size": 41,
             "margin": 8,
+            "left": 50,
+            "top": 150,
         },
     }
     return settings[level]
