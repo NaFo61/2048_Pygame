@@ -48,16 +48,13 @@ class Board:
         collected_g = self.collected_g
         return collected_g >= need_money
 
-
-    def render(self, screen):
+    def render_cells(self, screen):
         """Метод, который отображает все поле"""
-        self.render_decoration(screen)
-
         for i in range(self.value):
             for j in range(self.value):
                 self.render_cell(screen, i, j)
 
-    def render_decoration(self, screen, draw_back_button=False):
+    def render_decoration(self, screen, draw_back_button=False, draw_ulta_red=False):
         width, height = self.screen_size
 
         # <===== Надпись размер поля =====>
@@ -100,7 +97,7 @@ class Board:
         g_text = font.render("G", True, style.S_TABLE_SCORE_TEXT_VALUE_G)
 
         button_x_text = (
-            115 + col_text.get_width() - len(str(self.collected_g)) * 4
+                115 + col_text.get_width() - len(str(self.collected_g)) * 4
         )
         button_y_text = 48 - g_text.get_height() // 2
 
@@ -108,19 +105,34 @@ class Board:
         # <===== Твой баланс =====>
 
         # <===== Ульта удаление =====>
-        ulta_delete = pygame.draw.rect(
-            screen, style.S_TABLE_SCORE, (90, 75, 50, 50), 0, 5
-        )
-        pygame.draw.rect(
-            screen, style.S_TABLE_SCORE_BORDER, (90, 75, 50, 50), 5, 5
-        )
+        if draw_ulta_red:
+            ulta_delete = pygame.draw.rect(
+                screen, style.S_TABLE_SCORE, (90, 75, 50, 50), 0, 5
+            )
+            pygame.draw.rect(
+                screen, style.S_TABLE_SCORE_BORDER, (90, 75, 50, 50), 5, 5
+            )
 
-        image = pygame.transform.scale(
-            load.load_image("ulta_delete.png", (255, 255, 255)),
-            (40, 40),
-        )
+            image = pygame.transform.scale(
+                load.load_image("ulta_delete_click.png", (255, 255, 255)),
+                (40, 40),
+            )
 
-        screen.blit(image, (ulta_delete.x + 5, ulta_delete.y + 5))
+            screen.blit(image, (ulta_delete.x + 5, ulta_delete.y + 5))
+        else:
+            ulta_delete = pygame.draw.rect(
+                screen, style.S_TABLE_SCORE, (90, 75, 50, 50), 0, 5
+            )
+            pygame.draw.rect(
+                screen, style.S_TABLE_SCORE_BORDER, (90, 75, 50, 50), 5, 5
+            )
+
+            image = pygame.transform.scale(
+                load.load_image("ulta_delete.png", (255, 255, 255)),
+                (40, 40),
+            )
+
+            screen.blit(image, (ulta_delete.x + 5, ulta_delete.y + 5))
 
         # <===== Ульта удаление =====>
 
@@ -225,16 +237,16 @@ class Board:
         text_width, text_height = font.size(str(cell_value))
 
         text_x = (
-            self.left
-            + self.margin * (j + 1)
-            + j * self.cell_size
-            + (self.cell_size - text_width) // 2
+                self.left
+                + self.margin * (j + 1)
+                + j * self.cell_size
+                + (self.cell_size - text_width) // 2
         )
         text_y = (
-            self.top
-            + self.margin * (i + 1)
-            + i * self.cell_size
-            + (self.cell_size - text_height) // 2
+                self.top
+                + self.margin * (i + 1)
+                + i * self.cell_size
+                + (self.cell_size - text_height) // 2
         )
 
         screen.blit(text_rendered, (text_x, text_y))
@@ -303,7 +315,7 @@ class LogicBoard(Board):
             inds_g = [i for i, v in enumerate(line) if v == "G"]
             for ind_g in inds_g:
                 if ind_g != len(line) - 1:
-                    if [i for i in line[ind_g + 1 :] if i and i != "G"]:
+                    if [i for i in line[ind_g + 1:] if i and i != "G"]:
                         line[ind_g] = 0
                         self.collected_g += 1
             new_line = [i for i in line if i] + [0] * line.count(0)
@@ -313,8 +325,8 @@ class LogicBoard(Board):
         for i in range(self.value):
             for j in range(self.value - 1):
                 if (
-                    self.board[i][j] == self.board[i][j + 1]
-                    and self.board[i][j + 1] != 0
+                        self.board[i][j] == self.board[i][j + 1]
+                        and self.board[i][j + 1] != 0
                 ):
                     if self.board[i][j] != "G":
                         result_of_cell = self.board[i][j] * 2
@@ -342,8 +354,8 @@ class LogicBoard(Board):
         for i in range(self.value):
             for j in range(self.value - 1, 0, -1):
                 if (
-                    self.board[i][j] == self.board[i][j - 1]
-                    and self.board[i][j] != 0
+                        self.board[i][j] == self.board[i][j - 1]
+                        and self.board[i][j] != 0
                 ):
                     if self.board[i][j] != "G":
                         result_of_cell = self.board[i][j] * 2
@@ -362,7 +374,7 @@ class LogicBoard(Board):
             inds_g = [i for i, v in enumerate(line) if v == "G"]
             for ind_g in inds_g:
                 if ind_g != len(line) - 1:
-                    if [i for i in line[ind_g + 1 :] if i and i != "G"]:
+                    if [i for i in line[ind_g + 1:] if i and i != "G"]:
                         line[ind_g] = 0
                         self.collected_g += 1
             new_line = [i for i in line if i] + [0] * line.count(0)
@@ -371,8 +383,8 @@ class LogicBoard(Board):
         for i in range(self.value):
             for j in range(self.value - 1):
                 if (
-                    self.board[i][j] == self.board[i][j + 1]
-                    and self.board[i][j + 1] != 0
+                        self.board[i][j] == self.board[i][j + 1]
+                        and self.board[i][j + 1] != 0
                 ):
                     if self.board[i][j] != "G":
                         result_of_cell = self.board[i][j] * 2
@@ -401,8 +413,8 @@ class LogicBoard(Board):
         for i in range(self.value):
             for j in range(self.value - 1, 0, -1):
                 if (
-                    self.board[i][j] == self.board[i][j - 1]
-                    and self.board[i][j] != 0
+                        self.board[i][j] == self.board[i][j - 1]
+                        and self.board[i][j] != 0
                 ):
                     if self.board[i][j] != "G":
                         result_of_cell = self.board[i][j] * 2
@@ -459,10 +471,10 @@ class App(Game):
         margin = self.settings.get("margin")
         value = self.settings.get("value")
         if (
-            x < left
-            or x > left + cell_size * value + margin * (value + 1)
-            or y < top
-            or y > top + cell_size * value + margin * (value + 1)
+                x < left
+                or x > left + cell_size * value + margin * (value + 1)
+                or y < top
+                or y > top + cell_size * value + margin * (value + 1)
         ):
             return None
         return (
@@ -487,16 +499,19 @@ class App(Game):
         screen.fill(style.BACKGROUND_COLOR)
         board = Game(self.screen_size, self.settings)
         board.render_decoration(screen, True)
+
+        ulta_red = False
+
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.terminate()
                 if event.type == pygame.KEYDOWN:
                     if event.key in (
-                        pygame.K_LEFT,
-                        pygame.K_RIGHT,
-                        pygame.K_UP,
-                        pygame.K_DOWN,
+                            pygame.K_LEFT,
+                            pygame.K_RIGHT,
+                            pygame.K_UP,
+                            pygame.K_DOWN,
                     ):
                         random.choice(self.move_sounds).play()
                         board.move(event.key)
@@ -528,7 +543,7 @@ class App(Game):
 
                     button_x_text = width // 2 - text.get_width() // 2
                     button_y_text = (
-                        height - height // 12 - text.get_height() // 2
+                            height - height // 12 - text.get_height() // 2
                     )
                     if 150 < x < 350 and 571 < y < 621:
                         pygame.draw.rect(
@@ -549,21 +564,7 @@ class App(Game):
                         )
                         screen.blit(text, (button_x_text, button_y_text))
                     if 90 < x < 140 and 75 < y < 125:
-                        ulta_delete = pygame.draw.rect(
-                            screen, style.S_TABLE_SCORE, (90, 75, 50, 50), 0, 5
-                        )
-                        pygame.draw.rect(
-                            screen, style.S_TABLE_SCORE_BORDER, (90, 75, 50, 50), 5, 5
-                        )
-
-                        image = pygame.transform.scale(
-                            load.load_image("ulta_delete_click.png", (255, 255, 255)),
-                            (40, 40),
-                        )
-
-                        screen.blit(image, (ulta_delete.x + 5, ulta_delete.y + 5))
-
-
+                        ulta_red = True
 
                         pygame.draw.rect(
                             screen,
@@ -582,19 +583,7 @@ class App(Game):
 
                         screen.blit(text, (button_x_text, button_y_text))
                     else:
-                        ulta_delete = pygame.draw.rect(
-                            screen, style.S_TABLE_SCORE, (90, 75, 50, 50), 0, 5
-                        )
-                        pygame.draw.rect(
-                            screen, style.S_TABLE_SCORE_BORDER, (90, 75, 50, 50), 5, 5
-                        )
-
-                        image = pygame.transform.scale(
-                            load.load_image("ulta_delete.png", (255, 255, 255)),
-                            (40, 40),
-                        )
-
-                        screen.blit(image, (ulta_delete.x + 5, ulta_delete.y + 5))
+                        ulta_red = False
 
                         pygame.draw.rect(
                             screen,
@@ -604,9 +593,10 @@ class App(Game):
                             5,
                         )
 
-
-            board.render(screen)
+            self.render_decoration(screen, draw_ulta_red=ulta_red)
+            board.render_cells(screen)
             pygame.display.flip()
+
     def start_page(self, screen):
         width, height = self.screen_size
 
