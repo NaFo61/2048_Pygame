@@ -32,12 +32,8 @@ class Board:
 
         self.ulta_delete_active = False
 
-    def get_board(self):
-        print("x", self.board)
-
     def check_valid_cell(self, cell):
         i, j = cell
-        print(self.board, cell)
         return True if self.board[i][j] != 0 else False
 
     def check_money_for_ulta(self, need_money):
@@ -82,7 +78,6 @@ class Board:
         col_text = font.render(
             f"{self.collected_g}", True, style.S_TABLE_SCORE_TEXT_VALUE
         )
-        print(f"self.collected_g: {self.collected_g}")
 
         button_x_text = 115 - col_text.get_width() // 2
         button_y_text = 48 - col_text.get_height() // 2

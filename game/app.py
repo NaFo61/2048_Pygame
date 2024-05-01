@@ -1,6 +1,7 @@
 import random
 import datetime
 import sys
+import pathlib
 
 import pygame
 
@@ -16,11 +17,13 @@ class App(game.Game):
         self.level = 1
         self.settings = funcs.generate_settings(self.level)
 
+        self.base_dir = pathlib.Path(__file__)
         self.move_sounds = [
-            pygame.mixer.Sound(f"../data/move_music_{i}.wav")
+            pygame.mixer.Sound(str(self.base_dir.parent / 'data' / 'music' / f"move_music_{i}.wav"))
             for i in range(1, 4)
         ]
-        self.click_sound = pygame.mixer.Sound(f"../data/click_music.wav")
+
+        self.click_sound = pygame.mixer.Sound(self.base_dir.parent / 'data' / 'music' / "click_music.wav")
 
         self.start_page(screen)
 
@@ -273,8 +276,6 @@ class App(game.Game):
                         self.choice_page(screen)
                     elif records_button_rect.collidepoint(x, y):
                         self.click_sound.play()
-                        # Handle records button click
-                        ...
                     elif rules_button_rect.collidepoint(x, y):
                         self.click_sound.play()
                         self.rules_page(screen)
